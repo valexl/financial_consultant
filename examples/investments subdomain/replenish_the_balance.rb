@@ -19,7 +19,7 @@ class Cash
   end
 
   def add(money)
-    @money = Money.new(@money.value += money.value, currency: @money.currency)
+    @money = Money.new(value: @money.value + money.value, currency: @money.currency)
   end
 end
 
