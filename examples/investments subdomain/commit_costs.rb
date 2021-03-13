@@ -42,7 +42,7 @@ class Investment
   end
 end
 
-class AppartmentInvestment < Investment
+class ApartmentInvestment < Investment
 end
 
 class StockInvestment < Investment

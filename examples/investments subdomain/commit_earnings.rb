@@ -42,7 +42,7 @@ class Investment
   end
 end
 
-class AppartmentInvestment < Investment
+class ApartmentInvestment < Investment
 end
 
 class StockInvestment < Investment
@@ -97,8 +97,8 @@ money = Money.new(value: 10000)
 balance = Balance.replenish(money)
 
 money = Money.new(value: 100)
-appartment_investment = AppartmentInvestment.new(name: "Rental", initial_price: money)
-Balance.open_investment(appartment_investment)
+apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money)
+Balance.open_investment(apartment_investment)
 
 money = Money.new(value: 2000)
 stock_investment = StockInvestment.new(name: "GOOG", initial_price: money)
@@ -106,4 +106,4 @@ Balance.open_investment(stock_investment)
 
 
 money = Money.new(value: 2000)
-appartment_investment.commit_earnings(money)
+apartment_investment.commit_earnings(money)
