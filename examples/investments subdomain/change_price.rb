@@ -108,10 +108,5 @@ money = Money.new(value: 2000)
 stock_investment = StockInvestment.new(name: "GOOG", initial_price: money)
 Balance.open_investment(stock_investment)
 
-
-money = Money.new(value: 2000)
-appartment_investment.commit_earnings(money)
-
-
-money = Money.new(value: 260)
-appartment_investment.commit_costs(money)
+money = Money.new(value: 2100)
+stock_investment.change_price(money)
