@@ -33,6 +33,12 @@ class Investment
     @name = name
     @initial_price = initial_price
     @price = price || initial_price
+    @earnings = []
+    @cosrs = []
+  end
+
+  def commit_earnings(money)
+    @earnings.push(money)
   end
 end
 
@@ -87,6 +93,9 @@ end
 money = Money.new(value: 10000)
 balance = Balance.replenish(money)
 
+money = Money.new(value: 10000)
+balance = Balance.replenish(money)
+
 money = Money.new(value: 100)
 appartment_investment = AppartmentInvestment.new(name: "Rental", initial_price: money)
 Balance.open_investment(appartment_investment)
@@ -96,3 +105,5 @@ stock_investment = StockInvestment.new(name: "GOOG", initial_price: money)
 Balance.open_investment(stock_investment)
 
 
+money = Money.new(value: 2000)
+appartment_investment.commit_earnings(money)
