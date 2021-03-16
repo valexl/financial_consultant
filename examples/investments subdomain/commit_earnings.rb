@@ -120,7 +120,6 @@ money = Price.new(value: 9000, currency: "USD")
 apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money, balance: balance)
 apartment_investment.open
 
-
 money = Price.new(value: 100, currency: "USD")
 stock_investment = StockInvestment.new(name: "GOOG", initial_price: money, balance: balance)
 stock_investment.open
