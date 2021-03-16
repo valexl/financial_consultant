@@ -8,6 +8,9 @@ class Money
   end
 end
 
+class Price < Money
+end
+
 class Cash
   attr_reader :money
   def initialize(money=nil)
@@ -29,10 +32,16 @@ end
 
 class Investment
   attr_reader :name, :initial_price, :price
-  def initialize(name:, initial_price:, price: nil)
+
+  def initialize(name:, initial_price:, price: nil, balance: )
     @name = name
     @initial_price = initial_price
     @price = price || initial_price
+    @balance = balance
+  end
+
+  def open
+    @balance.notify(self, "investment_opened")
   end
 end
 
@@ -45,33 +54,37 @@ end
 
 class Balance
   class << self
-    def replenish(money)
-      instance.replenish(money)
-    end
-
-    def open_investment(investment)
-      instance.open_investment(investment)
+    def init(cash: Cash.new, investments: [])
+      @instance ||= send(:new, cash: cash, investments: investments)     
     end
 
     def instance
       @instance
     end
   end
+  private_class_method :new
   
   attr_reader :cash, :investments
+  
   def initialize(cash:, investments: [])
-    @cash = cash
+    @cash = cash || Cash.new
     @investments = investments
   end
-
-  @instance = new(cash: Cash.new)
-  private_class_method :new
 
   def replenish(money)
     cash.add(money)
     puts "cash value - #{cash.value}"
     # do some logic
   end
+
+  def notify(source, event)
+    case event
+    when "investment_opened"
+      open_investment(source)
+    end
+  end
+
+  private
 
   def open_investment(investment)
     cash.remove(investment.price)
@@ -84,15 +97,15 @@ class Balance
 end
 
 
+balance = Balance.init(cash: Cash.new)
 money = Money.new(value: 10000)
-balance = Balance.replenish(money)
+balance.replenish(money)
 
-money = Money.new(value: 100)
-apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money)
-Balance.open_investment(apartment_investment)
-
-money = Money.new(value: 2000)
-stock_investment = StockInvestment.new(name: "GOOG", initial_price: money)
-Balance.open_investment(stock_investment)
+money = Price.new(value: 9000, currency: "USD")
+apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money, balance: balance)
+apartment_investment.open
 
 
+money = Price.new(value: 100, currency: "USD")
+stock_investment = StockInvestment.new(name: "GOOG", initial_price: money, balance: balance)
+stock_investment.open
