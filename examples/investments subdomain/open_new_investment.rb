@@ -101,11 +101,11 @@ balance = Balance.init(cash: Cash.new)
 money = Money.new(value: 10000)
 balance.replenish(money)
 
-money = Price.new(value: 9000, currency: "USD")
-apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money, balance: balance)
+price = Price.new(value: 9000, currency: "USD")
+apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: price, balance: balance)
 apartment_investment.open
 
 
-money = Price.new(value: 100, currency: "USD")
-stock_investment = StockInvestment.new(name: "GOOG", initial_price: money, balance: balance)
+price = Price.new(value: 100, currency: "USD")
+stock_investment = StockInvestment.new(name: "GOOG", initial_price: price, balance: balance)
 stock_investment.open
