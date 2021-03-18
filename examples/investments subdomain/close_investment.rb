@@ -58,8 +58,8 @@ class Investment
     @balance.notify(costs, "costs_reimbursed")
   end
 
-  def change_price(price)
-    @price = price
+  def close
+    @balance.notify(self, "investment_closed")
   end
 end
 
@@ -103,6 +103,8 @@ class Balance
       receive_earnings(source)
     when "costs_reimbursed"
       reimburse_costs(source)
+    when "investment_closed"
+      close_investment(source)
     end
   end
 
@@ -128,6 +130,13 @@ class Balance
     puts "costs value - #{costs.value};"
     puts "cash value - #{cash.value}"
   end
+
+  def close_investment(investment)
+    cash.add(investment.price)
+    @investments = @investments - [investment]
+    puts "investments.count - #{investments.count}"
+    puts "cash value - #{cash.value}"
+  end
 end
 
 
@@ -139,10 +148,13 @@ money = Price.new(value: 9000, currency: "USD")
 apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money, balance: balance)
 apartment_investment.open
 
-money = Price.new(value: 100, currency: "USD")
-stock_investment = StockInvestment.new(name: "GOOG", initial_price: money, balance: balance)
-stock_investment.open
+costs = Costs.new(value: 200)
+apartment_investment.reimburse_costs(costs)
 
+earnings = Earnings.new(value: 300)
+apartment_investment.receive_earnings(earnings)
 
-money = Money.new(value: 2100)
-stock_investment.change_price(money)
+price = Price.new(value: 9500)
+stock_investment.change_price(price)
+
+apartment_investment.close
