@@ -155,6 +155,6 @@ earnings = Earnings.new(value: 300)
 apartment_investment.receive_earnings(earnings)
 
 price = Price.new(value: 9500)
-stock_investment.change_price(price)
+apartment_investment.change_price(price)
 
 apartment_investment.close
