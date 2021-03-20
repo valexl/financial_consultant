@@ -32,16 +32,18 @@ class Money
   attr_accessor :value
   attr_reader :currency
   
-  def initialize(value:, currency: Currency::USD)
+  def initialize(value:, currency:)
     @value = value
     @currency = currency
   end
 
   def add(money)
+    return self if money.currency != currency
     self.class.new(value: value + money.value, currency: currency)
   end
 
   def subtract(money)
+    return self if money.currency != currency
     self.class.new(value: value - money.value, currency: currency)
   end
 end
@@ -97,29 +99,15 @@ class Cash
   end
 
   def add(money)
-    case money.currency
-    when Currency::RUB
-      @rub_money = @rub_money.add(money)
-    when Currency::EUR
-      @eur_money = @eur_money.add(money)
-    when Currency::USD
-      @usd_money = @usd_money.add(money)
-    else
-      raise "unsupported currency - #{money.currency}"
-    end      
+    @rub_money = @rub_money.add(money)
+    @eur_money = @eur_money.add(money)
+    @usd_money = @usd_money.add(money)
   end
 
   def subtract(money)
-    case money.currency
-    when Currency::RUB
-      @rub_money = @rub_money.subtract(money)
-    when Currency::EUR
-      @eur_money = @eur_money.subtract(money)
-    when Currency::USD
-      @usd_money = @usd_money.subtract(money)
-    else
-      raise "unsupported currency - #{money.currency}"
-    end      
+    @rub_money = @rub_money.subtract(money)
+    @eur_money = @eur_money.subtract(money)
+    @usd_money = @usd_money.subtract(money)
   end
 end
 
