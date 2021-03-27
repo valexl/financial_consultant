@@ -32,9 +32,9 @@ class Money
   attr_accessor :currency
   attr_reader :items
   
-  def initialize
-    @currency = nil
-    @items = [
+  def initialize(currency: nil)
+    @currency = currency
+    @items ||= [
       Item.new(value: 0, level: 1),
       Item.new(value: 0, level: 2),
       Item.new(value: 0, level: 3),
@@ -45,17 +45,26 @@ class Money
   def add(money)
     return self if money.currency != currency
     result = []
-    SumMoneyItemIterator.new(@items, money.items).each do |item1, item2|
-      result << Item.new(value: item1.value + item2.value, level: item1.level)
+    items_iterator.each_with_level do |item1, level|
+      result << Item.new(value: item1.value + money.items[level].value, level: level)
     end
     @items = result
   end
 
   def subtract(money)
     return self if money.currency != currency
-    items = @items.each_with_index.map do |item, index|
-      item.value -= money.items[index].value
+    result = []
+    items_iterator.each_with_level do |item1, level|
+      result << Item.new(value: item1.value - money.items[level].value, level: level)
     end
+    @items = result
+  end
+
+  def withdrawable
+    money = self.class.new
+    money.currency = currency
+    money.income_of_income_of_income = withdrawable_items_iterator.sum { |item| item.value }
+    money
   end
 
   def initial_value=(value)
@@ -76,6 +85,16 @@ class Money
 
   def value
     items.map(&:value).sum
+  end
+
+  private
+
+  def items_iterator
+    ItemsIterator.new(@items)
+  end
+
+  def withdrawable_items_iterator
+    WithdrawableItemsIterator.new(@items)
   end
 
   class Item
@@ -197,24 +216,40 @@ end
 
 
 #####################################
-#####################################
+#########     Iterators     #########
 #####################################
 
 
-class SumMoneyItemIterator
+class ItemsIterator
   include Enumerable
 
-  def initialize(first_items, second_items)
-    @first_items = first_items
-    @second_items = second_items
+  def initialize(items)
+    @items = items
   end
 
   def each(&block)
-    @first_items.each_with_index do |first_item, index|
-      yield first_item, @second_items[index]
-    end
+    @items.each(&block)
+  end
+
+  alias_method :each_with_level, :each_with_index
+end
+
+class WithdrawableItemsIterator
+  include Enumerable
+
+  def initialize(items)
+    @items = items
+  end
+
+  def each(&block)
+    @items.select { |item| item.level >= 4 }.each(&block)
   end
 end
+
+
+#####################################
+#####################################
+#####################################
 
 
 class Cash
@@ -244,6 +279,18 @@ class Cash
     @rub_money.subtract(money)
     @eur_money.subtract(money)
     @usd_money.subtract(money)
+  end
+
+  def withdrawable_money_rub
+    @rub_money.withdrawable
+  end
+
+  def withdrawable_money_usd
+    @usd_money.withdrawable
+  end
+
+  def withdrawable_money_eur
+    @eur_money.withdrawable
   end
 end
 
@@ -327,6 +374,24 @@ class Balance
     end
   end
 
+  def withdrawable_money_rub
+    cash.withdrawable_money_rub
+  end
+
+  def withdrawable_money_usd
+    cash.withdrawable_money_usd
+  end
+
+  def withdrawable_money_eur
+    cash.withdrawable_money_eur
+  end
+
+  def withdraw(money)
+    cash.subtract(money)
+    puts "money value - #{money.value}"
+    puts "cash value - #{cash.value}"
+  end
+
   private
 
   def open_investment(investment)
@@ -357,8 +422,6 @@ class Balance
     puts "cash value - #{cash.value}"
   end
 end
-
-
 
 money_creator = MoneyCreator.new(MoneyBuilder.new)
 
@@ -394,3 +457,13 @@ price = money_creator.build_usd(value: 9500)
 apartment_investment.change_price(price)
 
 apartment_investment.close
+
+money = balance.withdrawable_money_rub
+balance.withdraw(money)
+
+money = balance.withdrawable_money_usd
+balance.withdraw(money)
+
+money = balance.withdrawable_money_eur
+balance.withdraw(money)
+
