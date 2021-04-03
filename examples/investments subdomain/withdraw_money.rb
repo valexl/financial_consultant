@@ -434,7 +434,7 @@ cash = Cash.new(
 
 balance = Balance.init(cash: cash)
 
-money = money_creator.build_usd(value: 1000)
+money = money_creator.build_usd(value: 1000000)
 balance.replenish(money)
 
 money_creator.builder = PriceBuilder.new
