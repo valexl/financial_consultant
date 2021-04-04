@@ -350,6 +350,18 @@ class Balance
     @investments = investments
   end
 
+  def open_appartment_investment(name: ,price: )
+    apartment_investment = ApartmentInvestment.new(name: name, initial_price: price, balance: self)
+    apartment_investment.open
+    apartment_investment
+  end
+
+  def open_stock_investment(name: ,price: )
+    stock_investment = StockInvestment.new(name: name, initial_price: price, balance: self)
+    stock_investment.open
+    stock_investment
+  end
+
   def total_equity(currency)
     puts "-----------------"
     puts "Total equityin currency - #{currency}"
@@ -465,13 +477,10 @@ balance.replenish(money)
 money_creator.builder = PriceBuilder.new
 
 money = money_creator.build_usd(value: 9000)
-apartment_investment = ApartmentInvestment.new(name: "Rental", initial_price: money, balance: balance)
-apartment_investment.open
+apartment_investment = balance.open_appartment_investment(name: "Rental", price: money)
 
 money = money_creator.build_usd(value: 1000)
-apartment_investment = StockInvestment.new(name: "GOOG", initial_price: money, balance: balance)
-apartment_investment.open
-
+stock_investment = balance.open_stock_investment(name: "Rental", price: money)
 
 balance.total_equity(Currency::RUB)
 balance.total_equity(Currency::EUR)
