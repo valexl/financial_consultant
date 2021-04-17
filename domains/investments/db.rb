@@ -1,0 +1,1 @@
+# it should contain minimal code to setup the database connection, without loading any models
