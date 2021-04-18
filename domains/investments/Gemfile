@@ -24,3 +24,8 @@ gem 'byebug'
 
 # CI
 gem 'rubocop', require: false
+
+# test
+gem 'rspec'
+gem 'cucumber'
+
