@@ -1,0 +1,29 @@
+create_db = lambda do |env|
+  ENV['RACK_ENV'] = env
+  require 'sequel'
+  require 'dotenv'
+  require 'logger'
+  require 'byebug'
+
+  Dotenv.load(".env.#{ENV['RACK_ENV']}")
+  db_name = ENV.fetch('DATABASE_URL').split('/').last
+  Sequel.connect('adapter' => 'postgres', 'database' => 'postgres') do |db|
+    db.execute "DROP DATABASE IF EXISTS #{db_name}"
+    db.execute "CREATE DATABASE #{db_name}"
+  end
+end
+
+desc 'Create development database'
+task :create_dev_db do
+  create_db.call('development')
+end
+
+desc 'Create test database'
+task :create_test_db do
+  create_db.call('test')
+end
+
+desc 'Create production database'
+task :create_production_db do
+  create_db.call('production')
+end

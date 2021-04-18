@@ -1,11 +1,26 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-ruby "3.0.1"
+ruby '3.0.1'
 
-gem "roda"
-gem "puma"
-gem "tilt"
-gem "erubi"
+gem 'roda'
 
+# servers
+gem 'puma'
 
+# views
+gem 'erubi'
+gem 'tilt'
 
+# database
+gem 'pg'
+gem 'sequel'
+
+# config
+gem 'dotenv'
+gem 'rake'
+
+# debug
+gem 'byebug'
+
+# CI
+gem 'rubocop', require: false
