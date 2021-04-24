@@ -26,6 +26,7 @@ gem 'byebug'
 gem 'rubocop', require: false
 
 # test
-gem 'rspec'
-gem 'cucumber'
-
+group :test do
+  gem 'cucumber'
+  gem 'rspec'
+end
