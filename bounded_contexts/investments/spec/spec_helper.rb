@@ -1,4 +1,7 @@
-ENV["RACK_ENV"] = "test"
+ENV['RACK_ENV'] = 'test'
+require 'rspec-roda'
+require 'byebug'
+require_relative '../app'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
