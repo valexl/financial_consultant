@@ -13,61 +13,61 @@ module FinancialConsultant
       use Rack::CommonLogger, Logger.new($stdout)
 
       plugin :all_verbs
-      plugin :render, escape: true, views: "templates", layout: './layout'
+      plugin :render, escape: true, views: 'templates', layout: './layout'
       plugin :render_each
       plugin :partials
       plugin :view_options
 
       route do |r|
         r.root do
-          r.redirect "/balance"
+          r.redirect '/balance'
         end
 
-        r.on "balance" do
-          set_view_subdir "balance"
+        r.on 'balance' do
+          set_view_subdir 'balance'
           r.root do
-            view "show"
+            view 'show'
           end
 
-          r.on "replenish" do
+          r.on 'replenish' do
             r.get do
-              view "replenish"
+              view 'replenish'
             end
 
             r.post do
-              r.redirect "/balance"
+              r.redirect '/balance'
             end
           end
         end
 
-        r.on "investments" do
-          set_view_subdir "investments"
+        r.on 'investments' do
+          set_view_subdir 'investments'
 
-          r.on "open" do
+          r.on 'open' do
             r.get do
-              view "open"
+              view 'open'
             end
 
             r.post do
-              r.redirect "/balance"
+              r.redirect '/balance'
             end
           end
 
-          r.on Integer do |investment_id|
+          r.on Integer do |_investment_id|
             r.put do
-              r.redirect "/balance"
+              r.redirect '/balance'
             end
 
-            r.get "edit" do
-              view "edit"
+            r.get 'edit' do
+              view 'edit'
             end
 
-            r.get "close" do
-              view "close"
+            r.get 'close' do
+              view 'close'
             end
 
-            r.put "close" do
-              r.redirect "/balance"
+            r.put 'close' do
+              r.redirect '/balance'
             end
           end
         end

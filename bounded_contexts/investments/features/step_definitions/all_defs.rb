@@ -1,5 +1,5 @@
 Given('investment costs {float} {string}') do |investment_cost, currency|
-  @investment_price = $money_creator.public_send("build_#{currency.downcase}", value: investment_cost) 
+  @investment_price = $money_creator.public_send("build_#{currency.downcase}", value: investment_cost)
 end
 
 Given('cash equals {float} RUB') do |cash_value_rub|
@@ -14,18 +14,17 @@ Given('cash equals {float} EUR') do |cash_value_eur|
   @cash_value_eur = $money_creator.build_eur(value: cash_value_eur)
 end
 
-
 When('opens this investment') do
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
     usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
   )
 
   @balance = Balance.init(cash: balance_cash)
 
-  @investment = @balance.open_appartment_investment(name: "test", price: @investment_price)
+  @investment = @balance.open_appartment_investment(name: 'test', price: @investment_price)
 end
 
 Then('cash should be {float} {string}') do |expected_value, currency|
@@ -51,28 +50,28 @@ end
 
 Given('opened investment') do
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
     usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
   )
 
   @balance = Balance.init(cash: balance_cash)
 
-  @investment = @balance.open_appartment_investment(name: "test", price: $money_creator.build_rub(value: 0))
+  @investment = @balance.open_appartment_investment(name: 'test', price: $money_creator.build_rub(value: 0))
 end
 
 Given('closed investment') do
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
     usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
   )
 
   @balance = Balance.init(cash: balance_cash)
 
-  @investment = @balance.open_appartment_investment(name: "test", price: $money_creator.build_rub(value: 0))
+  @investment = @balance.open_appartment_investment(name: 'test', price: $money_creator.build_rub(value: 0))
   @investment.close
 end
 
@@ -82,11 +81,9 @@ When('{float} RUB costs come for this investment') do |costs_value|
 end
 
 Given('money is {float} {string}') do |value, currency|
-  begin
-    @replenished_money = $money_creator.public_send("build_#{currency.downcase}", value: value) 
-  rescue NoMethodError
-    # TODO there should be better way to check unsupported currency following current desig
-  end
+  @replenished_money = $money_creator.public_send("build_#{currency.downcase}", value: value)
+rescue NoMethodError
+  # TODO: there should be better way to check unsupported currency following current desig
 end
 
 When('balance RUB cash is {float}') do |cash_value_rub|
@@ -103,10 +100,10 @@ end
 
 Then('balance RUB cash should be {float}') do |value|
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
-    usd_money: @cash_value_usd, 
-    eur_money: @cash_value_eur, 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
+    usd_money: @cash_value_usd,
+    eur_money: @cash_value_eur
   )
 
   @balance = Balance.init(cash: balance_cash)
@@ -125,30 +122,30 @@ end
 
 Given('opened investment prices {float} {string}') do |investment_price, currency|
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
     usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
   )
 
   @balance = Balance.init(cash: balance_cash)
   price = $money_creator.public_send("build_#{currency.downcase}", value: investment_price)
-  @investment = @balance.open_appartment_investment(name: "test", price: price)
+  @investment = @balance.open_appartment_investment(name: 'test', price: price)
 end
 
 Given('closed investment prices {float} {string}') do |investment_price, currency|
   balance_cash = Cash.new(
-    default_currency: Currency::USD, 
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+    default_currency: Currency::USD,
+    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
     usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
   )
 
   @balance = Balance.init(cash: balance_cash)
   initial_price = $money_creator.public_send("build_#{currency.downcase}", value: 0)
-  @investment = @balance.open_appartment_investment(name: "test", price: initial_price)
+  @investment = @balance.open_appartment_investment(name: 'test', price: initial_price)
   @investment.close
-  
+
   new_price = $money_creator.public_send("build_#{currency.downcase}", value: investment_price)
   @investment.change_price(new_price)
 end
@@ -160,16 +157,16 @@ end
 When('investment opening by price {float} RUB') do |investment_price|
   if @balance.blank?
     balance_cash = Cash.new(
-      default_currency: Currency::USD, 
-      rub_money: @cash_value_rub || $money_creator.build_rub(value: 0), 
+      default_currency: Currency::USD,
+      rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
       usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-      eur_money: @cash_value_eur || $money_creator.build_eur(value: 0),
+      eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
     )
 
     @balance = Balance.init(cash: balance_cash)
   end
   price = $money_creator.build_rub(value: investment_price)
-  @investment = @balance.open_appartment_investment(name: "test", price: price)
+  @investment = @balance.open_appartment_investment(name: 'test', price: price)
 end
 
 When('investment closing with {float} RUB profit') do |profit|

@@ -1,9 +1,9 @@
-require "byebug"
+require 'byebug'
 
 class Currency
-  USD = "USD".freeze
-  EUR = "EUR".freeze
-  RUB = "RUB".freeze
+  USD = 'USD'.freeze
+  EUR = 'EUR'.freeze
+  RUB = 'RUB'.freeze
 
   EXCHANGE_RATES = {
     USD => {
@@ -31,15 +31,15 @@ end
 class Money
   attr_accessor :currency
   attr_reader :items
-  
+
   def initialize(currency: nil, items: nil)
     @currency = currency
-    @items = items 
+    @items = items
     @items ||= [
       Item.new(value: 0, level: 1),
       Item.new(value: 0, level: 2),
       Item.new(value: 0, level: 3),
-      Item.new(value: 0, level: 4),
+      Item.new(value: 0, level: 4)
     ]
   end
 
@@ -47,36 +47,40 @@ class Money
     value.to_s
   end
 
-  def +(money)
-    return self if money.currency != currency
+  def +(other)
+    return self if other.currency != currency
+
     result = []
     items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value + money.items[level].value, level: level)
+      result << Item.new(value: item1.value + other.items[level].value, level: level)
     end
     new_money = self.class.new(currency: currency)
     new_money.set_items(result)
     new_money
   end
 
-  def -(money)
-    return self if money.currency != currency
+  def -(other)
+    return self if other.currency != currency
+
     result = []
     items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value - money.items[level].value, level: level)
+      result << Item.new(value: item1.value - other.items[level].value, level: level)
     end
     new_money = self.class.new(currency: currency)
     new_money.set_items(result)
     new_money
   end
 
-  def >=(money)
-    return false if money.currency != currency
-    value >= money.value
+  def >=(other)
+    return false if other.currency != currency
+
+    value >= other.value
   end
 
-  def <(money)
-    return false if money.currency != currency
-    value < money.value
+  def <(other)
+    return false if other.currency != currency
+
+    value < other.value
   end
 
   def positive?
@@ -98,6 +102,7 @@ class Money
   def add(money)
     return self if money.currency != currency
     return self unless money.positive?
+
     result = []
     items_iterator.each_with_level do |item, level|
       result << Item.new(value: item.value + money.items[level].value, level: level)
@@ -109,6 +114,7 @@ class Money
     return self if money.currency != currency
     return self unless money.positive?
     return self if self < money
+
     result = []
     items_iterator.each_with_level do |item, level|
       result << Item.new(value: item.value - money.items[level].value, level: level)
@@ -182,19 +188,19 @@ class Money
   end
 
   def initial_value_in_percent
-    (initial_value.to_f/value)
+    (initial_value.to_f / value)
   end
 
   def income_in_percent
-    (income.to_f/value)
+    (income.to_f / value)
   end
 
   def income_of_income_in_percent
-    (income_of_income.to_f/value)
+    (income_of_income.to_f / value)
   end
 
   def income_of_income_of_income_in_percent
-    (income_of_income_of_income.to_f/value)
+    (income_of_income_of_income.to_f / value)
   end
 
   private
@@ -208,9 +214,9 @@ class Money
   end
 
   class Item
-    attr_reader :value, :level
-    attr_writer :value
-    
+    attr_accessor :value
+    attr_reader :level
+
     def initialize(value:, level:)
       @value = value
       @level = level
@@ -235,6 +241,7 @@ class MoneyBuilder
   MONEY_CLASS = Money
 
   attr_writer :value, :currency, :income, :income_of_income, :income_of_income_of_income
+
   def initialize
     reset
   end
@@ -256,7 +263,6 @@ class MoneyBuilder
     @money_object.income_of_income_of_income = @income_of_income_of_income
     @money_object
   end
-
 end
 
 class PriceBuilder < MoneyBuilder
@@ -273,12 +279,12 @@ end
 
 class MoneyCreator
   attr_accessor :builder
-  
+
   def initialize(builder)
     @builder = builder
   end
 
-  def build(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0, currency:)
+  def build(value:, currency:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     builder.value = value
     builder.currency = currency
     builder.income = income
@@ -291,9 +297,9 @@ class MoneyCreator
 
   def build_rub(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value, 
-      income: income, 
-      income_of_income: income_of_income, 
+      value: value,
+      income: income,
+      income_of_income: income_of_income,
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::RUB
     )
@@ -301,9 +307,9 @@ class MoneyCreator
 
   def build_usd(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value, 
-      income: income, 
-      income_of_income: income_of_income, 
+      value: value,
+      income: income,
+      income_of_income: income_of_income,
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::USD
     )
@@ -311,20 +317,18 @@ class MoneyCreator
 
   def build_eur(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value, 
-      income: income, 
-      income_of_income: income_of_income, 
+      value: value,
+      income: income,
+      income_of_income: income_of_income,
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::EUR
     )
   end
 end
 
-
 #####################################
 #########     Iterators     #########
 #####################################
-
 
 class ItemsIterator
   include Enumerable
@@ -337,7 +341,7 @@ class ItemsIterator
     @items.each(&block)
   end
 
-  alias_method :each_with_level, :each_with_index
+  alias each_with_level each_with_index
 end
 
 class WithdrawableItemsIterator
@@ -352,15 +356,14 @@ class WithdrawableItemsIterator
   end
 end
 
-
 #####################################
 #####################################
 #####################################
-
 
 class Cash
   attr_reader :default_currency
-  def initialize(default_currency:, rub_money:, eur_money:, usd_money: )
+
+  def initialize(default_currency:, rub_money:, eur_money:, usd_money:)
     @default_currency = default_currency
     @rub_money = rub_money
     @eur_money = eur_money
@@ -368,7 +371,7 @@ class Cash
   end
 
   def value(currency = default_currency)
-    availabile_monies.sum {|availabile_money| availabile_money.exchange(currency).value }
+    availabile_monies.sum { |availabile_money| availabile_money.exchange(currency).value }
   end
 
   def rub_only_value
@@ -385,12 +388,14 @@ class Cash
 
   def add(money)
     return if money.nil?
-    availabile_monies.each {|availabile_money| availabile_money.add(money)}
+
+    availabile_monies.each { |availabile_money| availabile_money.add(money) }
   end
 
   def subtract(money)
     return if money.nil?
-    availabile_monies.each {|availabile_money| availabile_money.subtract(money) }
+
+    availabile_monies.each { |availabile_money| availabile_money.subtract(money) }
   end
 
   def withdrawable_money_rub
@@ -406,7 +411,7 @@ class Cash
   end
 
   def enough_money?(money)
-    availabile_monies.any? {|availabile_money| availabile_money >= money }
+    availabile_monies.any? { |availabile_money| availabile_money >= money }
   end
 
   private
@@ -432,7 +437,7 @@ class Investment
     @initial_price = initial_price
     @price = price || initial_price
     ############
-    ## TODO: avoid using direct creation. This is a hotfix 
+    ## TODO: avoid using direct creation. This is a hotfix
     ############
     @total_earnings = Money.new(currency: initial_price.currency)
     @total_costs = Money.new(currency: initial_price.currency)
@@ -447,29 +452,31 @@ class Investment
   end
 
   def open
-    @balance.notify(self, "investment_opening_request")
-    @status = "opened"
+    @balance.notify(self, 'investment_opening_request')
+    @status = 'opened'
   end
 
   def receive_earnings(earnings)
-    return if @status == "closed"
-    if @total_earnings.nil?
-      @total_earnings = earnings
-    else
-      @total_earnings = @total_earnings + earnings
-    end
-    @balance.notify(earnings, "investment_earnings_receiving_request")
+    return if @status == 'closed'
+
+    @total_earnings = if @total_earnings.nil?
+                        earnings
+                      else
+                        @total_earnings + earnings
+                      end
+    @balance.notify(earnings, 'investment_earnings_receiving_request')
   end
 
   def reimburse_costs(costs)
-    return if @status == "closed"
-    @total_costs = @total_costs + costs
-    @balance.notify(costs, "investment_costs_reimbursing_request")
+    return if @status == 'closed'
+
+    @total_costs += costs
+    @balance.notify(costs, 'investment_costs_reimbursing_request')
   end
 
   def close
-    @balance.notify(self, "investment_closed")
-    @status = "closed"
+    @balance.notify(self, 'investment_closed')
+    @status = 'closed'
   end
 
   def change_price(price)
@@ -481,7 +488,7 @@ class Investment
     delta_price = price - @initial_price
     delta_price = delta_price.move_all_to_one_level if delta_price.positive?
     change_price(delta_price)
-    @balance.notify(delta_price, "profit_taken")
+    @balance.notify(delta_price, 'profit_taken')
   end
 
   def delta_price
@@ -515,36 +522,35 @@ end
 #####################################
 #####################################
 
-
 class Balance
   class << self
     def init(cash: Cash.new, investments: [])
-      send(:new, cash: cash, investments: investments)     
+      send(:new, cash: cash, investments: investments)
     end
   end
   private_class_method :new
-  
+
   attr_reader :cash, :investments
-  
+
   def initialize(cash:, investments: [])
     @cash = cash || Cash.new
     @investments = investments
   end
 
-  def open_appartment_investment(name: ,price: )
+  def open_appartment_investment(name:, price:)
     apartment_investment = ApartmentInvestment.new(name: name, initial_price: price, balance: self)
     apartment_investment.open
     apartment_investment
   end
 
-  def open_stock_investment(name: ,price: )
+  def open_stock_investment(name:, price:)
     stock_investment = StockInvestment.new(name: name, initial_price: price, balance: self)
     stock_investment.open
     stock_investment
   end
 
   def total_equity(currency)
-    cash.value(currency) + investments.sum {|i| i.value(currency) }
+    cash.value(currency) + investments.sum { |i| i.value(currency) }
   end
 
   def replenish(money)
@@ -557,16 +563,16 @@ class Balance
 
   def notify(source, event)
     case event
-    when "investment_opening_request"
+    when 'investment_opening_request'
       open_investment(source)
-    when "investment_earnings_receiving_request"
+    when 'investment_earnings_receiving_request'
       receive_earnings(source)
-    when "investment_costs_reimbursing_request"
+    when 'investment_costs_reimbursing_request'
       reimburse_costs(source)
-    when "investment_closed"
+    when 'investment_closed'
       close_investment(source)
-    when "profit_taken"
-      take_investment_profit(source)      
+    when 'profit_taken'
+      take_investment_profit(source)
     end
   end
 
@@ -602,6 +608,7 @@ class Balance
 
   def open_investment(investment)
     return unless cash.enough_money?(investment.price)
+
     cash.subtract(investment.price)
     investments.push(investment)
   end
@@ -619,29 +626,30 @@ class Balance
     cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
     cash.add(investment.net_interest_income)
-    @investments = @investments - [investment]
+    @investments -= [investment]
   end
 
   def take_investment_profit(money)
     cash.add(money)
-  end  
+  end
 end
 
 class BalanceRepository
   @instance = new
 
   private_class_method :new
-  
-  def self.instance
-    @instance
+
+  class << self
+    attr_reader :instance
   end
 
   def fetch_balance(money_creator)
     cash = Cash.new(
-      default_currency: Currency::USD, 
-      rub_money: money_creator.build_rub(value: 0), 
-      usd_money: money_creator.build_usd(value: 20000, income: 1000, income_of_income: 500, income_of_income_of_income: 100), 
-      eur_money: money_creator.build_eur(value: 0), 
+      default_currency: Currency::USD,
+      rub_money: money_creator.build_rub(value: 0),
+      usd_money: money_creator.build_usd(value: 20_000, income: 1000, income_of_income: 500,
+                                         income_of_income_of_income: 100),
+      eur_money: money_creator.build_eur(value: 0)
     )
     Balance.init(cash: cash)
   end
