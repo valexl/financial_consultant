@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe FinancialConsultant::Investments::App, roda: :app do
-  describe '/' do
+  describe "GET /" do
     before { get '/' }
 
     it do
@@ -11,27 +11,27 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
     end
   end
 
-  describe "balance/replenish" do
+  describe "GET /balance/replenish" do
     before { get 'balance/replenish' }
     
     it { is_expected.to be_successful }
   end
 
   context "investments" do
-    describe '/investments/open' do
+    describe 'GET /investments/open' do
       before { get '/investments/open' }
 
       it { is_expected.to be_successful }
     end
 
-    describe '/investments/:investment_id/edit' do
+    describe 'GET /investments/:investment_id/edit' do
       let(:investment_id)  { 1 }
       before { get "/investments/#{investment_id}/edit" }
 
       it { is_expected.to be_successful }
     end
 
-    describe '/investments/:investment_id/close' do
+    describe 'GET /investments/:investment_id/close' do
       let(:investment_id)  { 1 }
       before { get "/investments/#{investment_id}/close" }
 
