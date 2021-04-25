@@ -29,25 +29,45 @@ module FinancialConsultant
             view "show"
           end
 
-          r.get "replenish" do
-            view "replenish"
+          r.on "replenish" do
+            r.get do
+              view "replenish"
+            end
+
+            r.post do
+              r.redirect "/balance"
+            end
           end
         end
 
         r.on "investments" do
           set_view_subdir "investments"
 
-          r.get "open" do
-            view "open"
+          r.on "open" do
+            r.get do
+              view "open"
+            end
+
+            r.post do
+              r.redirect "/balance"
+            end
           end
 
           r.on Integer do |investment_id|
+            r.put do
+              r.redirect "/balance"
+            end
+
             r.get "edit" do
               view "edit"
             end
 
             r.get "close" do
               view "close"
+            end
+
+            r.put "close" do
+              r.redirect "/balance"
             end
           end
         end
