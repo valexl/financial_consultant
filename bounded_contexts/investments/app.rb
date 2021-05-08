@@ -5,8 +5,13 @@ require 'dotenv'
 ENV['RACK_ENV'] ||= 'development'
 Dotenv.load(".env.#{ENV['RACK_ENV']}")
 
+unless ENV['RACK_ENV'] == 'production'
+  require 'byebug'
+end
+
 require_relative 'db'
 require_relative 'api'
+require_relative 'domain'
 
 module FinancialConsultant
   module Investments

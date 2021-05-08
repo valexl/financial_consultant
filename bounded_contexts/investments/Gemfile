@@ -19,11 +19,14 @@ gem 'sequel'
 gem 'dotenv'
 gem 'rake'
 
-# debug
-gem 'byebug'
 
 # CI
 gem 'rubocop', require: false
+
+group :test, :development do
+  # debug
+  gem 'byebug'
+end
 
 # test
 group :test do
