@@ -82,8 +82,6 @@ end
 
 Given('money is {float} {string}') do |value, currency|
   @replenished_money = $money_creator.public_send("build_#{currency.downcase}", value: value)
-rescue NoMethodError
-  # TODO: there should be better way to check unsupported currency following current desig
 end
 
 When('balance RUB cash is {float}') do |cash_value_rub|
