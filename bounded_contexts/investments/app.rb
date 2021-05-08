@@ -11,6 +11,7 @@ end
 
 require_relative 'db'
 require_relative 'api'
+require_relative 'infrastructure'
 require_relative 'domain'
 
 module FinancialConsultant
