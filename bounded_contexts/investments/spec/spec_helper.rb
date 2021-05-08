@@ -1,6 +1,12 @@
+require 'rake'
+load 'Rakefile'
+Rake::Task['create_test_db'].invoke
+Rake::Task['db_migrate_test'].execute
+
 ENV['RACK_ENV'] = 'test'
 require 'rspec-roda'
 require 'byebug'
+
 require_relative '../app'
 
 RSpec.configure do |config|

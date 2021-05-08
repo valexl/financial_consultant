@@ -5,7 +5,14 @@ require 'dotenv'
 ENV['RACK_ENV'] ||= 'development'
 Dotenv.load(".env.#{ENV['RACK_ENV']}")
 
+unless ENV['RACK_ENV'] == 'production'
+  require 'byebug'
+end
+
 require_relative 'db'
+require_relative 'api'
+require_relative 'infrastructure'
+require_relative 'domain'
 
 module FinancialConsultant
   module Investments
@@ -19,8 +26,12 @@ module FinancialConsultant
       plugin :view_options
 
       route do |r|
+        r.on "api" do
+          r.run API
+        end
+
         r.root do
-          r.redirect '/balance'
+          r.redirect '/balance/'
         end
 
         r.on 'balance' do
@@ -35,7 +46,7 @@ module FinancialConsultant
             end
 
             r.post do
-              r.redirect '/balance'
+              r.redirect '/balance/'
             end
           end
         end
@@ -49,13 +60,13 @@ module FinancialConsultant
             end
 
             r.post do
-              r.redirect '/balance'
+              r.redirect '/balance/'
             end
           end
 
           r.on Integer do |_investment_id|
             r.put do
-              r.redirect '/balance'
+              r.redirect '/balance/'
             end
 
             r.get 'edit' do
@@ -67,7 +78,7 @@ module FinancialConsultant
             end
 
             r.put 'close' do
-              r.redirect '/balance'
+              r.redirect '/balance/'
             end
           end
         end

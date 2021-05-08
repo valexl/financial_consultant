@@ -7,7 +7,7 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
     it do
       expect(last_response).to be_redirect
       follow_redirect!
-      expect(last_request.path).to eql '/balance'
+      expect(last_request.path).to eql '/balance/'
     end
   end
 
@@ -23,7 +23,7 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
     it do
       expect(last_response).to be_redirect
       follow_redirect!
-      expect(last_request.path).to eql '/balance'
+      expect(last_request.path).to eql '/balance/'
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
       it do
         expect(last_response).to be_redirect
         follow_redirect!
-        expect(last_request.path).to eql '/balance'
+        expect(last_request.path).to eql '/balance/'
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
       it do
         expect(last_response).to be_redirect
         follow_redirect!
-        expect(last_request.path).to eql '/balance'
+        expect(last_request.path).to eql '/balance/'
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe FinancialConsultant::Investments::App, roda: :app do
       it do
         expect(last_response).to be_redirect
         follow_redirect!
-        expect(last_request.path).to eql '/balance'
+        expect(last_request.path).to eql '/balance/'
       end
     end
   end
