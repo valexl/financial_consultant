@@ -7,6 +7,7 @@ Feature: Replenish Balance
     When balance RUB cash is <RUB cash>
     * balance EUR cash is <EUR cash>
     * balance USD cash is <USD cash>
+    * balance is replenished by given money
     Then balance RUB cash should be <amount of money in RUB>
     * balance EUR cash should be <amount of money in EUR>
     * balance USD cash should be <amount of money in USD>
@@ -22,5 +23,4 @@ Feature: Replenish Balance
     | 50000             | RUB                  | 1000     | 200      | 500      | 51000                  | 200                    | 500                    |
     | 20000             | EUR                  | 1000     | 200      | 500      | 1000                   | 20200                  | 500                    |
     | 777               | USD                  | 1000     | 200      | 500      | 1000                   | 200                    | 1277                   |
-    | 100               | CFP                  | 1000     | 200      | 500      | 1000                   | 200                    | 500                    |
 

@@ -1,3 +1,5 @@
+require_relative "replenish_balance_defs"
+
 Given('investment costs {float} {string}') do |investment_cost, currency|
   @investment_price = $money_creator.public_send("build_#{currency.downcase}", value: investment_cost)
 end
@@ -78,44 +80,6 @@ end
 When('{float} RUB costs come for this investment') do |costs_value|
   costs = $money_creator.build_rub(value: costs_value)
   @investment.reimburse_costs(costs)
-end
-
-Given('money is {float} {string}') do |value, currency|
-  @replenished_money = $money_creator.public_send("build_#{currency.downcase}", value: value)
-end
-
-When('balance RUB cash is {float}') do |cash_value_rub|
-  @cash_value_rub = $money_creator.build_rub(value: cash_value_rub)
-end
-
-When('balance USD cash is {float}') do |cash_value_usd|
-  @cash_value_usd = $money_creator.build_usd(value: cash_value_usd)
-end
-
-When('balance EUR cash is {float}') do |cash_value_eur|
-  @cash_value_eur = $money_creator.build_eur(value: cash_value_eur)
-end
-
-Then('balance RUB cash should be {float}') do |value|
-  balance_cash = Cash.new(
-    default_currency: Currency::USD,
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
-    usd_money: @cash_value_usd,
-    eur_money: @cash_value_eur
-  )
-
-  @balance = Balance.init(cash: balance_cash)
-
-  @balance.replenish(@replenished_money) if @replenished_money
-  expect(@balance.rub_cash_only_value).to eq(value)
-end
-
-Then('balance EUR cash should be {float}') do |float|
-  expect(@balance.eur_cash_only_value).to eq(float)
-end
-
-Then('balance USD cash should be {float}') do |float|
-  expect(@balance.usd_cash_only_value).to eq(float)
 end
 
 Given('opened investment prices {float} {string}') do |investment_price, currency|

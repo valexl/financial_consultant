@@ -1,12 +1,11 @@
 module Repositories
   class BalanceRepository
-    def self.initiate
-      BalanceRecord.create(cash: { "rub" => 0,  "usd" => 0,  "eur" => 0 }.to_json)
+    def self.initiate(rub_cash_value: 0, usd_cash_value: 0, eur_cash_value: 0)
+      BalanceRecord.create(cash: { "rub" => rub_cash_value,  "usd" => usd_cash_value,  "eur" => eur_cash_value}.to_json)
     end
 
     def self.fetch
       balace_record = BalanceRecord.last
-
       cash = JSON.parse(balace_record.cash)
       BalanceFactory.build(
         id: balace_record.id,
