@@ -23,6 +23,8 @@ module FinancialConsultant
               money_creator = MoneyCreator.new(MoneyBuilder.new)
               money = money_creator.build(currency: r.params.dig("money", "currency"), value: r.params.dig("money", "value"))
               balance.replenish(money)
+
+              Repositories::BalanceRepository.save(balance)
               { 
                 cash: {
                   rub: balance.rub_cash_only_value,
