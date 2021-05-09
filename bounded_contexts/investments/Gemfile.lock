@@ -132,6 +132,7 @@ DEPENDENCIES
   erubi
   pg
   puma
+  rack-test
   rake
   roda
   rspec

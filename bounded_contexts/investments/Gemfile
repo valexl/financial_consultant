@@ -30,6 +30,7 @@ end
 
 # test
 group :test do
+  gem 'rack-test'
   gem 'cucumber'
   gem 'rspec'
   gem 'rspec-roda'
