@@ -5,7 +5,7 @@ module Repositories
       balance.insert(cash: { "rub" => 0,  "usd" => 0,  "eur" => 0 }.to_json)
     end
 
-    def self.fetch(money_creator)
+    def self.fetch
       balance = DB[:balances].order(:id).last
 
       cash = JSON.parse(balance[:cash])
