@@ -1,5 +1,5 @@
 class BalanceFactory
-  def self.build(rub_value:, usd_value:, eur_value:)
+  def self.build(id:, rub_value:, usd_value:, eur_value:)
     builder = MoneyBuilder.new
     money_creator = MoneyCreator.new(builder)
     
@@ -8,6 +8,6 @@ class BalanceFactory
       usd_money: money_creator.build_usd(value: usd_value),
       eur_money: money_creator.build_eur(value: eur_value)
     )
-    Balance.new(cash: cash)
+    Balance.new(id: id, cash: cash)
   end
 end

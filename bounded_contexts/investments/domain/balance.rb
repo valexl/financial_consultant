@@ -1,7 +1,8 @@
 class Balance
-  attr_reader :cash, :investments
+  attr_reader :id, :cash, :investments
 
-  def initialize(cash:, investments: [])
+  def initialize(id:, cash:, investments: [])
+    @id = id
     @cash = cash || Cash.new
     @investments = investments
   end
