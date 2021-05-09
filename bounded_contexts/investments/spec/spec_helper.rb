@@ -8,6 +8,7 @@ require 'rspec-roda'
 require 'byebug'
 
 require_relative '../app'
+require_relative 'support/rspec_matchers'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
