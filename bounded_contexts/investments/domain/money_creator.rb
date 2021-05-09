@@ -6,11 +6,11 @@ class MoneyCreator
   end
 
   def build(value:, currency:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
-    builder.value = value
+    builder.value = value.to_f
     builder.currency = currency
-    builder.income = income
-    builder.income_of_income = income_of_income
-    builder.income_of_income_of_income = income_of_income_of_income
+    builder.income = income.to_f
+    builder.income_of_income = income_of_income.to_f
+    builder.income_of_income_of_income = income_of_income_of_income.to_f
     result = builder.money_object
     builder.reset
     result

@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 RSpec.describe Repositories::BalanceRepository do
-  let(:db) { }
-  
   describe ".initiate" do
     subject(:initiate) { described_class.initiate }
 
@@ -12,11 +10,38 @@ RSpec.describe Repositories::BalanceRepository do
   end
 
   describe ".fetch" do
-    subject(:fetch) { described_class.fetch(money_creator) }
-
-    let(:money_creator) { MoneyCreator.new(builder) } 
-    let(:builder) { }
+    subject(:fetch) { described_class.fetch }
 
     it { is_expected.to be_a(Balance) }
+  end
+
+  describe ".save" do
+    subject(:save) { described_class.save(balance) }
+
+    let(:balance) { described_class.fetch }
+    let(:new_cash) do
+      builder = MoneyBuilder.new
+      money_creator = MoneyCreator.new(builder)
+    
+      cash = Cash.new(
+        rub_money: money_creator.build_rub(value: 100),
+        usd_money: money_creator.build_usd(value: 1000),
+        eur_money: money_creator.build_eur(value: 10000)
+      )
+    end
+    
+    before do described_class.initiate
+      balance.instance_variable_set(:@cash, new_cash)
+    end
+
+    it "saves changes in db" do
+
+      expect {
+        save
+      }.to change { described_class.fetch.rub_cash_only_value }
+      .and change { described_class.fetch.usd_cash_only_value }
+      .and change { described_class.fetch.eur_cash_only_value }
+    end
+
   end
 end
