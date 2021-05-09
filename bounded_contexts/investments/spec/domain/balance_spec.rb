@@ -3,8 +3,15 @@ require 'spec_helper'
 RSpec.describe Balance do
   let(:balance) { described_class.new(cash: cash) }
   let(:cash) do
-    Cash.new(rub_value: rub_value, usd_value: usd_value, eur_value: eur_value)
+    money_creator = MoneyCreator.new(builder)
+  
+    cash = Cash.new(
+      rub_money: money_creator.build_rub(value: rub_value),
+      usd_money: money_creator.build_usd(value: usd_value),
+      eur_money: money_creator.build_eur(value: eur_value)
+    )
   end
+  let(:builder) { MoneyBuilder.new}
   let(:rub_value) { 0 }
   let(:usd_value) { 0 }
   let(:eur_value) { 0 }
@@ -22,9 +29,9 @@ RSpec.describe Balance do
     it "increases cash value for the same as in money currency" do
       expect {
         replenish
-      }.to change { cash.usd_value }.from(0).to(1000)
-      .and avoid_changing { cash.rub_value }.from(0)
-      .and avoid_changing { cash.eur_value }.from(0)
+      }.to change { cash.usd_only_value }.from(0).to(1000)
+      .and avoid_changing { cash.rub_only_value }.from(0)
+      .and avoid_changing { cash.eur_only_value }.from(0)
     end
   end
 end

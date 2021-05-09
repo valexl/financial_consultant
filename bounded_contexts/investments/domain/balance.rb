@@ -1,7 +1,7 @@
 class Balance
   attr_reader :id, :cash, :investments
 
-  def initialize(id:, cash:, investments: [])
+  def initialize(id: nil, cash:, investments: [])
     @id = id
     @cash = cash || Cash.new
     @investments = investments
