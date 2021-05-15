@@ -94,6 +94,26 @@ module FinancialConsultant
               }
             end
           end
+
+          r.on 'close' do
+            r.post true do
+              balance = Repositories::BalanceRepository.fetch
+              investment = balance.close_investment(name: r.params.dig("investment", "name"))
+              Repositories::BalanceRepository.save(balance)
+
+              { 
+                investment: {
+                  type: investment.type,
+                  name: investment.name,
+                  price: {
+                    currency: investment.price.currency,
+                    value: investment.price.value
+                  }
+                },
+              }
+            end
+          end
+
         end
       end
     end
