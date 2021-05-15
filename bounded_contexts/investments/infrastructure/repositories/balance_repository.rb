@@ -10,6 +10,7 @@ module Repositories
       investments = balance.investments.map do |investment|
         {
           "type" => investment.type,
+          "name" => investment.name,
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,
@@ -37,7 +38,14 @@ module Repositories
         usd_money: money_creator.build_usd(value: cash_data["usd"].to_f),
         eur_money: money_creator.build_eur(value: cash_data["eur"].to_f)
       )
-      Balance.new(id: balace_record.id, cash: cash, investments: investments_data)
+
+      balance = Balance.new(id: balace_record.id, cash: cash)
+      balance.investments = investments_data.map do |investment|
+        klass = investment["type"] == "apartment" ? Investments::ApartmentInvestment : Investments::StockInvestment
+        price = money_creator.build(currency: investment.dig("price","currency"), value: investment.dig("price","value"))
+        klass.new(name: investment["name"], initial_price: price, balance: balance)
+      end
+      balance
     end
 
     def self.save(balance)
@@ -49,6 +57,7 @@ module Repositories
       investments = balance.investments.map do |investment|
         {
           "type" => investment.type,
+          "name" => investment.name,
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,

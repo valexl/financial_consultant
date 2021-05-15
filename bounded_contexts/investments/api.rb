@@ -13,7 +13,21 @@ module FinancialConsultant
                 usd: balance.usd_cash_only_value,
                 eur: balance.eur_cash_only_value
               },
-              investments: []
+              total_equity: {
+                rub: balance.total_equity(Currency::RUB),
+                usd: balance.total_equity(Currency::USD),
+                eur: balance.total_equity(Currency::EUR),
+              },
+              investments: balance.investments.map do |investment|
+                {
+                  type: investment.type,
+                  name: investment.name,
+                  price: {
+                    currency: investment.price.currency,
+                    value: investment.price.value
+                  }
+                } 
+              end
             }
           end
 
@@ -48,17 +62,18 @@ module FinancialConsultant
                 value: r.params.dig("investment", "price", "value").to_f
               )
 
-              if r.params.dig("investment", "type")
-                apartment_investment = balance.open_apartment_investment(name: "Rental", price: money)
+              if r.params.dig("investment", "type") == "appartment"
+                investment = balance.open_apartment_investment(name: "Rental", price: money)
               end
 
               Repositories::BalanceRepository.save(balance)
               { 
                 investment: {
-                  type: apartment_investment.type,
+                  type: investment.type,
+                  name: investment.name,
                   price: {
-                    currency: apartment_investment.price.currency,
-                    value: apartment_investment.price.value
+                    currency: investment.price.currency,
+                    value: investment.price.value
                   }
                 },
               }
