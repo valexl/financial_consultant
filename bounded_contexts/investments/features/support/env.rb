@@ -3,9 +3,6 @@ require 'byebug'
 require 'rack/test'
 require File.expand_path('../../app', __dir__)
 
-
-$browser = Rack::Test::Session.new(FinancialConsultant::Investments::App.app)
-
 # class Currency
 #   USD = 'USD'.freeze
 #   EUR = 'EUR'.freeze

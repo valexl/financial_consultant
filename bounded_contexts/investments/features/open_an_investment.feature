@@ -7,7 +7,7 @@ Feature: Open an investment
     When opens this investment
     Then cash should be 10000 "RUB"
     * new opened investment 
-    * total equity should be 50000 RUB
+    * total equity should be 50000 "RUB"
 
   Scenario: Open Apartment Investment costs 40 000 RUB
     Given investment costs 40000 "RUB"
@@ -15,7 +15,7 @@ Feature: Open an investment
     When opens this investment
     Then cash should be 0 "RUB"
     * new opened investment 
-    * total equity should be 40000 RUB
+    * total equity should be 40000 "RUB"
 
   Scenario: Open Apartment Investment costs 40 000 RUB
     Given investment costs 40000 "RUB"
@@ -23,7 +23,7 @@ Feature: Open an investment
     When opens this investment
     Then cash should be 20000 "RUB"
     * no new investments
-    * total equity should be 20000 RUB        
+    * total equity should be 20000 "RUB"        
 
   Scenario: Open Apartment Investment costs 1 USD
     Given investment costs 1 "USD"
@@ -31,4 +31,4 @@ Feature: Open an investment
     When opens this investment
     Then cash should be 50000 "RUB"
     * no new investments
-    * total equity should be 50000 RUB
+    * total equity should be 50000 "RUB"

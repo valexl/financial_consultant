@@ -2,9 +2,22 @@ require 'spec_helper'
 
 RSpec.describe FinancialConsultant::Investments::API, roda: :app do
   let(:headers) { { "ACCEPT" => "application/json" } }
+  let(:builder)  { MoneyBuilder.new }
+  let(:money_creator) { MoneyCreator.new(builder) }
+  let(:balance) do
+    cash = Cash.new(
+      rub_money: money_creator.build_rub(value: initial_balance_rub_value),
+      usd_money: money_creator.build_usd(value: initial_balance_usd_value),
+      eur_money: money_creator.build_eur(value: initial_balance_eur_value)
+    )
+    Balance.new(cash: cash, investments: [])
+  end
+  let(:initial_balance_rub_value) { 0 }
+  let(:initial_balance_usd_value) { 0 }
+  let(:initial_balance_eur_value) { 0 }
 
   before do
-    Repositories::BalanceRepository.initiate
+    Repositories::BalanceRepository.create(balance)
   end
 
   describe 'GET /balance.json' do
@@ -21,8 +34,6 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         "investments" => []
       }
     end
-    let(:balance) { Repositories::BalanceRepository.fetch }
-
     before { get_balance.call }
 
     it { is_expected.to be_successful }
@@ -62,6 +73,56 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         post_repleninsh_balance.call
       }.to change { Repositories::BalanceRepository.fetch.usd_cash_only_value }
       .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
+      .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+    end
+  end
+
+  describe 'POST /investments/open.json' do
+    let(:post_open_investment) do
+      Proc.new {  post '/investments/open', params.merge(headers: headers) }
+    end
+
+    let(:initial_balance_rub_value) { 100000 }
+    let(:initial_balance_usd_value) { 3000 }
+    let(:initial_balance_eur_value) { 700 }
+    let(:params) do
+      {
+        investment: {
+          type: "appartment",
+          price: {
+            currency: "USD",
+            value: 1000
+          }
+        }
+      }
+    end
+    let(:expected_response) do
+      {
+        "investment" => {
+          "type" => "appartment",
+          "price" => {
+            "currency" => "USD",
+            "value" => 1000
+          }
+        },
+      }
+    end
+
+    before do
+      Repositories::BalanceRepository.save(balance)
+    end
+
+    it "returns expected response" do
+      post_open_investment.call
+      expect(response_body).to eq(expected_response)
+    end
+
+    it "increases number of investments on balakce" do
+      expect {
+        post_open_investment.call
+      }.to change { Repositories::BalanceRepository.fetch.investments.count }
+      .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
+      .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
       .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
     end
   end

@@ -1,5 +1,5 @@
 class Balance
-  attr_reader :id, :cash, :investments
+  attr_accessor :id, :cash, :investments
 
   def initialize(id: nil, cash:, investments: [])
     @id = id
@@ -7,8 +7,8 @@ class Balance
     @investments = investments
   end
 
-  def open_appartment_investment(name:, price:)
-    apartment_investment = ApartmentInvestment.new(name: name, initial_price: price, balance: self)
+  def open_apartment_investment(name:, price:)
+    apartment_investment = Investments::ApartmentInvestment.new(name: name, initial_price: price, balance: self)
     apartment_investment.open
     apartment_investment
   end
@@ -78,7 +78,6 @@ class Balance
 
   def open_investment(investment)
     return unless cash.enough_money?(investment.price)
-
     cash.subtract(investment.price)
     investments.push(investment)
   end
