@@ -7,8 +7,8 @@ class Balance
     @investments = investments
   end
 
-  def open_appartment_investment(name:, price:)
-    apartment_investment = ApartmentInvestment.new(name: name, initial_price: price, balance: self)
+  def open_apartment_investment(name:, price:)
+    apartment_investment = Investments::ApartmentInvestment.new(name: name, initial_price: price, balance: self)
     apartment_investment.open
     apartment_investment
   end

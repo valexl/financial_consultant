@@ -20,22 +20,31 @@ RSpec.describe Repositories::BalanceRepository do
 
     let(:balance) { described_class.fetch }
     let(:new_cash) do
-      builder = MoneyBuilder.new
-      money_creator = MoneyCreator.new(builder)
-    
       cash = Cash.new(
         rub_money: money_creator.build_rub(value: 100),
         usd_money: money_creator.build_usd(value: 1000),
         eur_money: money_creator.build_eur(value: 10000)
       )
     end
-    
-    before do described_class.initiate
+    let(:investments) do
+      [
+        Investments::ApartmentInvestment.new(
+          name: "Test", 
+          initial_price: money_creator.build_usd(value: 200),
+          balance: balance
+        )
+      ]
+    end
+    let(:builder)  { MoneyBuilder.new }
+    let(:money_creator) { MoneyCreator.new(builder) }
+
+    before do 
+      described_class.initiate
       balance.instance_variable_set(:@cash, new_cash)
+      balance.instance_variable_set(:@investments, investments)
     end
 
     it "saves changes in db" do
-
       expect {
         save
       }.to change { described_class.fetch.rub_cash_only_value }

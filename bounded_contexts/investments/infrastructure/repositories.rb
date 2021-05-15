@@ -1,1 +1,2 @@
 require_relative 'repositories/balance_repository'
+require_relative 'repositories/investments_repository'

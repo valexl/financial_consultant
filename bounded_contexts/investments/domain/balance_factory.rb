@@ -1,5 +1,5 @@
 class BalanceFactory
-  def self.build(id: nil, rub_value:, usd_value:, eur_value:)
+  def self.build(id: nil, rub_value:, usd_value:, eur_value:, investments:)
     builder = MoneyBuilder.new
     money_creator = MoneyCreator.new(builder)
     
