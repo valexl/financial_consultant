@@ -31,6 +31,11 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "usd" => 0.0,
           "eur" => 0.0,
         },
+        "total_equity" => {
+          "rub" => 0.0,
+          "usd" => 0.0,
+          "eur" => 0.0,
+        },
         "investments" => []
       }
     end
@@ -59,6 +64,11 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "usd" => 1000.0,
           "eur" => 0.0,
         },
+        "total_equity" => {
+          "rub" => 75000.0,
+          "usd" => 1000.0,
+          "eur" => 800,
+        },        
         "investments" => []
       }
     end
@@ -88,7 +98,8 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     let(:params) do
       {
         investment: {
-          type: "appartment",
+          type: investment_type,
+          name: "Test",
           price: {
             currency: "USD",
             value: 1000
@@ -96,35 +107,73 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         }
       }
     end
-    let(:expected_response) do
-      {
-        "investment" => {
-          "type" => "appartment",
-          "price" => {
-            "currency" => "USD",
-            "value" => 1000
-          }
-        },
-      }
-    end
 
     before do
       Repositories::BalanceRepository.save(balance)
     end
 
-    it "returns expected response" do
-      post_open_investment.call
-      expect(response_body).to eq(expected_response)
+    context "when investment type is apartment" do
+      let(:investment_type) { "apartment" }
+  
+      let(:expected_response) do
+        {
+          "investment" => {
+            "type" => "apartment",
+            "name"=>"Test",
+            "price" => {
+              "currency" => "USD",
+              "value" => 1000
+            }
+          },
+        }
+      end
+  
+      it "returns expected response" do
+        post_open_investment.call
+        expect(response_body).to eq(expected_response)
+      end
+
+      it "increases number of investments on balakce" do
+        expect {
+          post_open_investment.call
+        }.to change { Repositories::BalanceRepository.fetch.investments.count }
+        .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
+        .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
+        .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+      end
+    end
+    
+    context "when investment type is stock" do
+      let(:investment_type) { "stock" }
+  
+      let(:expected_response) do
+        {
+          "investment" => {
+            "type" => "stock",
+            "name"=>"Test",
+            "price" => {
+              "currency" => "USD",
+              "value" => 1000
+            }
+          },
+        }
+      end
+  
+      it "returns expected response" do
+        post_open_investment.call
+        expect(response_body).to eq(expected_response)
+      end
+
+      it "increases number of investments on balakce" do
+        expect {
+          post_open_investment.call
+        }.to change { Repositories::BalanceRepository.fetch.investments.count }
+        .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
+        .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
+        .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+      end
     end
 
-    it "increases number of investments on balakce" do
-      expect {
-        post_open_investment.call
-      }.to change { Repositories::BalanceRepository.fetch.investments.count }
-      .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
-      .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
-      .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
-    end
   end
 
   def response_body

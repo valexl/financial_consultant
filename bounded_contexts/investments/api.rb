@@ -45,6 +45,11 @@ module FinancialConsultant
                   usd: balance.usd_cash_only_value,
                   eur: balance.eur_cash_only_value
                 },
+                total_equity: {
+                  rub: balance.total_equity(Currency::RUB),
+                  usd: balance.total_equity(Currency::USD),
+                  eur: balance.total_equity(Currency::EUR),
+                },
                 investments: []
               }
             end
@@ -62,8 +67,18 @@ module FinancialConsultant
                 value: r.params.dig("investment", "price", "value").to_f
               )
 
-              if r.params.dig("investment", "type") == "appartment"
-                investment = balance.open_apartment_investment(name: "Rental", price: money)
+              investment = if r.params.dig("investment", "type") == "apartment"
+                balance.open_apartment_investment(
+                  name: r.params.dig("investment", "name"), 
+                  price: money
+                )
+              elsif r.params.dig("investment", "type") == "stock"
+                balance.open_stock_investment(
+                  name: r.params.dig("investment", "name"), 
+                  price: money
+                )
+              else
+                raise 'Unsupported type'
               end
 
               Repositories::BalanceRepository.save(balance)
