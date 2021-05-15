@@ -14,7 +14,7 @@ class Balance
   end
 
   def open_stock_investment(name:, price:)
-    stock_investment = StockInvestment.new(name: name, initial_price: price, balance: self)
+    stock_investment = Investments::StockInvestment.new(name: name, initial_price: price, balance: self)
     stock_investment.open
     stock_investment
   end

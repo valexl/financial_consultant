@@ -1,5 +1,5 @@
 module Investments
   class ApartmentInvestment < Base
-    TYPE = "appartment"
+    TYPE = "apartment"
   end
 end
