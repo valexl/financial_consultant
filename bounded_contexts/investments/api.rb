@@ -36,6 +36,35 @@ module FinancialConsultant
             end
           end
         end
+
+        r.on 'investments' do
+          r.on 'open' do
+            r.post true do
+              balance = Repositories::BalanceRepository.fetch
+              money_creator = MoneyCreator.new(MoneyBuilder.new)
+
+              money = money_creator.build(
+                currency: r.params.dig("investment", "price", "currency"), 
+                value: r.params.dig("investment", "price", "value").to_f
+              )
+
+              if r.params.dig("investment", "type")
+                apartment_investment = balance.open_apartment_investment(name: "Rental", price: money)
+              end
+
+              Repositories::BalanceRepository.save(balance)
+              { 
+                investment: {
+                  type: apartment_investment.type,
+                  price: {
+                    currency: apartment_investment.price.currency,
+                    value: apartment_investment.price.value
+                  }
+                },
+              }
+            end
+          end
+        end
       end
     end
   end

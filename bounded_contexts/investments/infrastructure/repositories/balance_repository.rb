@@ -1,23 +1,43 @@
 module Repositories
   class BalanceRepository
-    def self.initiate(rub_cash_value: 0, usd_cash_value: 0, eur_cash_value: 0)
-      BalanceRecord.create(
-        cash: { "rub" => rub_cash_value,  "usd" => usd_cash_value,  "eur" => eur_cash_value}.to_json,
-        investments: [].to_json
+    def self.create(balance)
+      cash = { 
+          "rub" => balance.rub_cash_only_value,
+          "usd" => balance.usd_cash_only_value,
+          "eur" => balance.eur_cash_only_value
+
+      }
+      investments = balance.investments.map do |investment|
+        {
+          "type" => investment.type,
+          "price" => {
+            "currency" => investment.price_currency,
+            "value" => investment.price_value,
+          }
+        }
+      end      
+      balance_record = BalanceRecord.create(
+        cash: cash.to_json,
+        investments: investments.to_json
       )
+      balance.id = balance_record.id
     end
 
     def self.fetch
       balace_record = BalanceRecord.last
-      cash = JSON.parse(balace_record.cash)
-      investments = JSON.parse(balace_record.investments)
-      BalanceFactory.build(
-        id: balace_record.id,
-        rub_value: cash["rub"].to_f,
-        usd_value: cash["usd"].to_f,
-        eur_value: cash["eur"].to_f,
-        investments: investments
+      cash_data = JSON.parse(balace_record.cash)
+      # TODO: investments_data should be converted to array of Investment::*
+      investments_data = JSON.parse(balace_record.investments)
+
+      builder = MoneyBuilder.new
+      money_creator = MoneyCreator.new(builder)
+      
+      cash = Cash.new(
+        rub_money: money_creator.build_rub(value: cash_data["rub"].to_f),
+        usd_money: money_creator.build_usd(value: cash_data["usd"].to_f),
+        eur_money: money_creator.build_eur(value: cash_data["eur"].to_f)
       )
+      Balance.new(id: balace_record.id, cash: cash, investments: investments_data)
     end
 
     def self.save(balance)

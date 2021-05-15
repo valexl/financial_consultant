@@ -1,5 +1,4 @@
 require_relative 'domain/balance'
-require_relative 'domain/balance_factory'
 require_relative 'domain/cash'
 require_relative 'domain/currency'
 require_relative 'domain/investments/base'
