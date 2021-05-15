@@ -56,7 +56,7 @@ When('opens this investment') do
 
   $browser.post '/api/investments/open', {
     investment: { 
-      type: "appartment", 
+      type: "apartment", 
       name: "cucumber_test", 
       price: { 
         currency: @investment_cost.currency, 
