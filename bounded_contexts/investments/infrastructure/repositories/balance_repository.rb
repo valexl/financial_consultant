@@ -11,6 +11,7 @@ module Repositories
         {
           "type" => investment.type,
           "name" => investment.name,
+          "status" => investment.status,
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,
@@ -43,7 +44,7 @@ module Repositories
       balance.investments = investments_data.map do |investment|
         klass = investment["type"] == "apartment" ? Investments::ApartmentInvestment : Investments::StockInvestment
         price = money_creator.build(currency: investment.dig("price","currency"), value: investment.dig("price","value"))
-        klass.new(name: investment["name"], initial_price: price, balance: balance)
+        klass.new(name: investment["name"], initial_price: price, balance: balance, status: investment["status"])
       end
       balance
     end
@@ -58,6 +59,7 @@ module Repositories
         {
           "type" => investment.type,
           "name" => investment.name,
+          "status" => investment.status,
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,

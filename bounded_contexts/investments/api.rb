@@ -22,6 +22,7 @@ module FinancialConsultant
                 {
                   type: investment.type,
                   name: investment.name,
+                  status: investment.status,
                   price: {
                     currency: investment.price.currency,
                     value: investment.price.value
@@ -86,6 +87,7 @@ module FinancialConsultant
                 investment: {
                   type: investment.type,
                   name: investment.name,
+                  status: investment.status,
                   price: {
                     currency: investment.price.currency,
                     value: investment.price.value
@@ -94,6 +96,33 @@ module FinancialConsultant
               }
             end
           end
+
+          r.on 'close' do
+            r.post true do
+              balance = Repositories::BalanceRepository.fetch
+              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
+                investment.close
+                Repositories::BalanceRepository.save(balance)
+
+                { 
+                  investment: {
+                    type: investment.type,
+                    name: investment.name,
+                    status: investment.status,
+                    price: {
+                      currency: investment.price.currency,
+                      value: investment.price.value
+                    }
+                  },
+                }
+              else
+                {
+                  status: "skipped"
+                }
+              end
+            end
+          end
+
         end
       end
     end

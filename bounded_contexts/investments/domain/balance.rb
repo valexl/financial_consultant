@@ -19,6 +19,10 @@ class Balance
     stock_investment
   end
 
+  def find_investment(name:)
+    investments.find {|investment| investment.name == name}
+  end
+
   def total_equity(currency)
     cash.value(currency) + investments.sum { |i| i.value(currency) }
   end
@@ -40,7 +44,7 @@ class Balance
     when 'investment_costs_reimbursing_request'
       reimburse_costs(source)
     when 'investment_closed'
-      close_investment(source)
+      confirm_closing_investment(source)
     when 'profit_taken'
       take_investment_profit(source)
     end
@@ -90,7 +94,7 @@ class Balance
     cash.subtract(costs)
   end
 
-  def close_investment(investment)
+  def confirm_closing_investment(investment)
     cash.add(investment.initial_price)
     cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
