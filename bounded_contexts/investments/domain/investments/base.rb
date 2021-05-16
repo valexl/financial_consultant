@@ -1,9 +1,9 @@
 module Investments
   class Base
-    attr_reader :name, :initial_price, :price, :total_earnings, :total_costs, :balance
+    attr_reader :name, :initial_price, :price, :total_earnings, :total_costs, :balance, :status
     private :balance
 
-    def initialize(name:, initial_price:, balance:, price: nil)
+    def initialize(name:, initial_price:, balance:, price: nil, status: nil)
       @name = name
       @initial_price = initial_price
       @price = price || initial_price
@@ -15,7 +15,7 @@ module Investments
       ############
       ############
       @balance = balance
-      @status = nil
+      @status = status
     end
 
     def balance_id
@@ -26,7 +26,6 @@ module Investments
       self.class::TYPE
     end
       
-
     def price_value
       price.value
     end

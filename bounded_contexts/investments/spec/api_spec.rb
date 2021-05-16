@@ -120,6 +120,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "investment" => {
             "type" => "apartment",
             "name"=>"Test",
+            "status" => "opened",
             "price" => {
               "currency" => "USD",
               "value" => 1000
@@ -151,6 +152,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "investment" => {
             "type" => "stock",
             "name"=>"Test",
+            "status" => "opened",
             "price" => {
               "currency" => "USD",
               "value" => 1000
@@ -204,6 +206,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "investment" => {
             "type" => "apartment",
             "name"=>investment_name,
+            "status" => "closed",
             "price" => {
               "currency" => "USD",
               "value" => 1000
@@ -232,6 +235,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
           "investment" => {
             "type" => "stock",
             "name"=>investment_name,
+            "status" => "closed",
             "price" => {
               "currency" => "USD",
               "value" => 1000
