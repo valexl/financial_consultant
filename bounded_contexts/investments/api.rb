@@ -100,20 +100,26 @@ module FinancialConsultant
           r.on 'close' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              investment = balance.close_investment(name: r.params.dig("investment", "name"))
-              Repositories::BalanceRepository.save(balance)
+              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
+                investment.close
+                Repositories::BalanceRepository.save(balance)
 
-              { 
-                investment: {
-                  type: investment.type,
-                  name: investment.name,
-                  status: investment.status,
-                  price: {
-                    currency: investment.price.currency,
-                    value: investment.price.value
-                  }
-                },
-              }
+                { 
+                  investment: {
+                    type: investment.type,
+                    name: investment.name,
+                    status: investment.status,
+                    price: {
+                      currency: investment.price.currency,
+                      value: investment.price.value
+                    }
+                  },
+                }
+              else
+                {
+                  status: "skipped"
+                }
+              end
             end
           end
 

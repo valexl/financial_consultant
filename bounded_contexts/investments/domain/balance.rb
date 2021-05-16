@@ -19,10 +19,8 @@ class Balance
     stock_investment
   end
 
-  def close_investment(name:)
-    investment = investments.find {|investment| investment.name == name}
-    investment.close
-    investment
+  def find_investment(name:)
+    investments.find {|investment| investment.name == name}
   end
 
   def total_equity(currency)
