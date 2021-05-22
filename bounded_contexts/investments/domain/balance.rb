@@ -66,16 +66,28 @@ class Balance
     cash.subtract(money)
   end
 
+  def rub_cash_money
+    cash.rub_money
+  end
+
   def rub_cash_only_value
-    cash.rub_only_value
+    rub_cash_money.value
+  end
+
+  def usd_cash_money
+    cash.usd_money
   end
 
   def usd_cash_only_value
-    cash.usd_only_value
+    usd_cash_money.value
+  end
+
+  def eur_cash_money
+    cash.eur_money
   end
 
   def eur_cash_only_value
-    cash.eur_only_value
+    eur_cash_money.value
   end
 
   private

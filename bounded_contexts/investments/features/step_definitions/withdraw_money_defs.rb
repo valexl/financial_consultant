@@ -40,5 +40,6 @@ end
 
 Then('{float} RUB is withdrawable') do |expected_withdrawable_money_rub|
   balance = Repositories::BalanceRepository.fetch
+
   expect(balance.withdrawable_money_rub.value).to eq(expected_withdrawable_money_rub)
 end

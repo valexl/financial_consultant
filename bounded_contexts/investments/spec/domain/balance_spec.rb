@@ -29,9 +29,9 @@ RSpec.describe Balance do
     it "increases cash value for the same as in money currency" do
       expect {
         replenish
-      }.to change { cash.usd_only_value }.from(0).to(1000)
-      .and avoid_changing { cash.rub_only_value }.from(0)
-      .and avoid_changing { cash.eur_only_value }.from(0)
+      }.to change { cash.usd_money.value }.from(0).to(1000)
+      .and avoid_changing { cash.rub_money.value }.from(0)
+      .and avoid_changing { cash.eur_money.value }.from(0)
     end
   end
 end
