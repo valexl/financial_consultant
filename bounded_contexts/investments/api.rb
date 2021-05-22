@@ -91,7 +91,11 @@ module FinancialConsultant
                   price: {
                     currency: investment.price.currency,
                     value: investment.price.value
-                  }
+                  },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
+                    }
                 },
               }
             end
@@ -112,6 +116,10 @@ module FinancialConsultant
                     price: {
                       currency: investment.price.currency,
                       value: investment.price.value
+                    },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
                     }
                   },
                 }
@@ -123,6 +131,36 @@ module FinancialConsultant
             end
           end
 
+          r.on 'earnings' do
+            r.post true do
+              balance = Repositories::BalanceRepository.fetch
+              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
+                money_creator = MoneyCreator.new(MoneyBuilder.new)
+                earnings = money_creator.build(currency: r.params.dig("earnings", "currency"), value: r.params.dig("earnings", "value"))
+                investment.receive_earnings(earnings)
+                Repositories::BalanceRepository.save(balance)
+                { 
+                  investment: {
+                    type: investment.type,
+                    name: investment.name,
+                    status: investment.status,
+                    price: {
+                      currency: investment.price.currency,
+                      value: investment.price.value
+                    },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
+                    }
+                  },
+                }
+              else
+                {
+                  status: "skipped"
+                }
+              end
+            end
+          end
         end
       end
     end
