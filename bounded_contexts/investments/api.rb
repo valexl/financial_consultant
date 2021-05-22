@@ -26,6 +26,14 @@ module FinancialConsultant
                   price: {
                     currency: investment.price.currency,
                     value: investment.price.value
+                  },
+                  total_earnings: {
+                    currency: investment.total_earnings.currency,
+                    value: investment.total_earnings.value
+                  },
+                  total_costs: {
+                    currency: investment.total_costs.currency,
+                    value: investment.total_costs.value
                   }
                 } 
               end
@@ -51,7 +59,25 @@ module FinancialConsultant
                   usd: balance.total_equity(Currency::USD),
                   eur: balance.total_equity(Currency::EUR),
                 },
-                investments: []
+                investments: balance.investments.map do |investment|
+                  {
+                    type: investment.type,
+                    name: investment.name,
+                    status: investment.status,
+                    price: {
+                      currency: investment.price.currency,
+                      value: investment.price.value
+                    },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
+                    },
+                    total_costs: {
+                      currency: investment.total_costs.currency,
+                      value: investment.total_costs.value
+                    }
+                  } 
+                end
               }
             end
           end
@@ -92,10 +118,14 @@ module FinancialConsultant
                     currency: investment.price.currency,
                     value: investment.price.value
                   },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    }
+                  total_earnings: {
+                    currency: investment.total_earnings.currency,
+                    value: investment.total_earnings.value
+                  },
+                  total_costs: {
+                    currency: investment.total_costs.currency,
+                    value: investment.total_costs.value
+                  }                  
                 },
               }
             end
@@ -120,6 +150,10 @@ module FinancialConsultant
                     total_earnings: {
                       currency: investment.total_earnings.currency,
                       value: investment.total_earnings.value
+                    },
+                    total_costs: {
+                      currency: investment.total_costs.currency,
+                      value: investment.total_costs.value
                     }
                   },
                 }
@@ -151,6 +185,10 @@ module FinancialConsultant
                     total_earnings: {
                       currency: investment.total_earnings.currency,
                       value: investment.total_earnings.value
+                    },
+                    total_costs: {
+                      currency: investment.total_costs.currency,
+                      value: investment.total_costs.value
                     }
                   },
                 }
@@ -161,6 +199,42 @@ module FinancialConsultant
               end
             end
           end
+
+          r.on 'costs' do
+            r.post true do
+              balance = Repositories::BalanceRepository.fetch
+              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
+                money_creator = MoneyCreator.new(MoneyBuilder.new)
+                costs = money_creator.build(currency: r.params.dig("costs", "currency"), value: r.params.dig("costs", "value"))
+                investment.reimburse_costs(costs)
+                Repositories::BalanceRepository.save(balance)
+                { 
+                  investment: {
+                    type: investment.type,
+                    name: investment.name,
+                    status: investment.status,
+                    price: {
+                      currency: investment.price.currency,
+                      value: investment.price.value
+                    },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
+                    },
+                    total_costs: {
+                      currency: investment.total_costs.currency,
+                      value: investment.total_costs.value
+                    }
+                  },
+                }
+              else
+                {
+                  status: "skipped"
+                }
+              end
+            end
+          end
+
         end
       end
     end

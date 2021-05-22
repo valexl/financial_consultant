@@ -128,6 +128,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "total_earnings" => {
               "currency" => "USD",
               "value" => 0
+            },
+            "total_costs" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }
@@ -162,6 +166,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "value" => 1000
             },
             "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
+            },
+            "total_costs" => {
               "currency" => "USD",
               "value" => 0
             }
@@ -222,6 +230,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "total_earnings" => {
               "currency" => "USD",
               "value" => 0
+            },
+            "total_costs" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }
@@ -253,6 +265,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "value" => 1000
             },
             "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
+            },
+            "total_costs" => {
               "currency" => "USD",
               "value" => 0
             }
@@ -314,8 +330,12 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "value" => 100000
             },
             "total_earnings" => {
+              "currency" => earnings_currency,
+              "value" => earnings_value
+            },
+            "total_costs" => {
               "currency" => "USD",
-              "value" => 1000
+              "value" => 0
             }
           },
         }
@@ -349,6 +369,89 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
 
       it "returns expected response" do
         receive_investment_earnings.call
+        expect(response_body).to eq(expected_response)
+      end
+    end
+  end
+
+  describe 'POST /investments/costs.json' do
+    let(:receive_investment_costs) do
+      Proc.new {  post '/investments/costs', params.merge(headers: headers) }
+    end
+    let(:params) do
+      {
+        investment: {
+          name: investment_name
+        },
+        costs: {
+          currency: costs_currency,
+          value: costs_value
+        }
+      }
+    end
+    let(:initial_balance_rub_value) { 0 }
+    let(:initial_balance_usd_value) { 110000 }
+    let(:initial_balance_eur_value) { 0 }
+    let(:investment_name) { "test_investment" }
+    let(:costs_currency) { "USD"}
+    let(:costs_value) { 1000 }
+    let(:investment_price) do
+      money_creator.build(
+        currency: "USD", 
+        value: 100000
+      )
+    end
+
+    let(:expected_response) do
+        {
+          "investment" => {
+            "type" => "apartment",
+            "name"=>investment_name,
+            "status" => "opened",
+            "price" => {
+              "currency" => costs_currency,
+              "value" => 100000
+            },
+            "total_earnings" => {
+              "currency" => costs_currency,
+              "value" => 0
+            },
+            "total_costs" => {
+              "currency" => costs_currency,
+              "value" => costs_value
+            }
+          },
+        }
+      end    
+
+    before do
+      balance.open_apartment_investment(
+          name: investment_name, 
+          price: investment_price
+        )
+      Repositories::BalanceRepository.save(balance)
+    end
+
+    it "returns expected response" do
+      receive_investment_costs.call
+      expect(response_body).to eq(expected_response)
+    end
+
+    context "when investment was closed" do
+      let(:expected_response) do
+        {
+          "status" => "skipped"
+        }
+      end
+
+      before do
+        investment = balance.find_investment(name: investment_name)
+        investment.close
+        Repositories::BalanceRepository.save(balance)
+      end
+
+      it "returns expected response" do
+        receive_investment_costs.call
         expect(response_body).to eq(expected_response)
       end
     end

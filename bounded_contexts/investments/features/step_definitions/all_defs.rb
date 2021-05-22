@@ -1,11 +1,7 @@
 require_relative "replenish_balance_defs"
 require_relative "investments_defs"
 require_relative "investments_earnings_defs"
-
-When('{float} RUB costs come for this investment') do |costs_value|
-  costs = $money_creator.build_rub(value: costs_value)
-  @investment.reimburse_costs(costs)
-end
+require_relative "investments_costs_defs"
 
 When('investment opening by price {float} RUB') do |investment_price|
   if @balance.blank?
