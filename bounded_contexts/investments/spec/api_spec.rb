@@ -257,7 +257,85 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         expect(response_body).to eq(expected_response)
       end
     end
+  end
 
+  describe 'POST /investments/earnings.json' do
+    let(:receive_investment_earnings) do
+      Proc.new {  post '/investments/earnings', params.merge(headers: headers) }
+    end
+    let(:params) do
+      {
+        investment: {
+          name: investment_name
+        },
+        earnings: {
+          currency: earnings_currency,
+          value: earnings_value
+        }
+      }
+    end
+    let(:initial_balance_rub_value) { 0 }
+    let(:initial_balance_usd_value) { 100000 }
+    let(:initial_balance_eur_value) { 0 }
+    let(:investment_name) { "test_investment" }
+    let(:earnings_currency) { "USD"}
+    let(:earnings_value) { 1000 }
+    let(:investment_price) do
+      money_creator.build(
+        currency: "USD", 
+        value: 100000
+      )
+    end
+
+    let(:expected_response) do
+        {
+          "investment" => {
+            "type" => "apartment",
+            "name"=>investment_name,
+            "status" => "opened",
+            "price" => {
+              "currency" => earnings_currency,
+              "value" => 100000
+            },
+            "total_earnings" => {
+              "currency" => "USD",
+              "value" => 1000
+            }
+          },
+        }
+      end    
+
+    before do
+      balance.open_apartment_investment(
+          name: investment_name, 
+          price: investment_price
+        )
+      Repositories::BalanceRepository.save(balance)
+    end
+
+    it "returns expected response" do
+      receive_investment_earnings.call
+      expect(response_body).to eq(expected_response)
+    end
+
+    context "when investment was closed" do
+      let(:expected_response) do
+        {
+          "status" => "skipped"
+        }
+      end
+
+      before do
+        investment = balance.find_investment(name: investment_name)
+        investment.close
+        Repositories::BalanceRepository.save(balance)
+      end
+
+      it "returns expected response" do
+        receive_investment_earnings.call
+        expect(response_body).to eq(expected_response)
+      end
+    end
   end
 
   def response_body
