@@ -1,37 +1,6 @@
 require_relative "replenish_balance_defs"
 require_relative "investments_defs"
-
-When('{float} RUB earnings come from this investment') do |earnings_value|
-  earnings = $money_creator.build_rub(value: earnings_value)
-  @investment.receive_earnings(earnings)
-end
-
-Given('opened investment') do
-  balance_cash = Cash.new(
-    default_currency: Currency::USD,
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
-    usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
-  )
-
-  @balance = Balance.init(cash: balance_cash)
-
-  @investment = @balance.open_appartment_investment(name: 'test', price: $money_creator.build_rub(value: 0))
-end
-
-Given('closed investment') do
-  balance_cash = Cash.new(
-    default_currency: Currency::USD,
-    rub_money: @cash_value_rub || $money_creator.build_rub(value: 0),
-    usd_money: @cash_value_usd || $money_creator.build_usd(value: 0),
-    eur_money: @cash_value_eur || $money_creator.build_eur(value: 0)
-  )
-
-  @balance = Balance.init(cash: balance_cash)
-
-  @investment = @balance.open_appartment_investment(name: 'test', price: $money_creator.build_rub(value: 0))
-  @investment.close
-end
+require_relative "investments_earnings_defs"
 
 When('{float} RUB costs come for this investment') do |costs_value|
   costs = $money_creator.build_rub(value: costs_value)
