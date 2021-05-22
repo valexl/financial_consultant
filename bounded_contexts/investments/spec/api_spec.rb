@@ -124,6 +124,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "price" => {
               "currency" => "USD",
               "value" => 1000
+            },
+            "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }
@@ -156,6 +160,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "price" => {
               "currency" => "USD",
               "value" => 1000
+            },
+            "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }
@@ -210,6 +218,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "price" => {
               "currency" => "USD",
               "value" => 1000
+            },
+            "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }
@@ -239,6 +251,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "price" => {
               "currency" => "USD",
               "value" => 1000
+            },
+            "total_earnings" => {
+              "currency" => "USD",
+              "value" => 0
             }
           },
         }

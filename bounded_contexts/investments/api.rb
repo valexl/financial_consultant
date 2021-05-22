@@ -91,7 +91,11 @@ module FinancialConsultant
                   price: {
                     currency: investment.price.currency,
                     value: investment.price.value
-                  }
+                  },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
+                    }
                 },
               }
             end
@@ -112,6 +116,10 @@ module FinancialConsultant
                     price: {
                       currency: investment.price.currency,
                       value: investment.price.value
+                    },
+                    total_earnings: {
+                      currency: investment.total_earnings.currency,
+                      value: investment.total_earnings.value
                     }
                   },
                 }
