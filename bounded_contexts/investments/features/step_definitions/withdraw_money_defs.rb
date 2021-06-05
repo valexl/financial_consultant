@@ -23,11 +23,10 @@ When('investment opening by price {float} {string}') do |investment_price, curre
       } 
     }
   }
-
 end
 
 When('investment closing with {float} {string} profit') do |profit, currency|
-  new_price = $money_creator.build(currency: @investment_details.currency, value: @investment_details.value + profit)
+  new_price = $money_creator.build(currency: @investment_details.currency, value: @investment_details.value + profit, income: profit)
 
   # TODO: add change price api endpoint
   balance = Repositories::BalanceRepository.fetch
@@ -40,6 +39,5 @@ end
 
 Then('{float} RUB is withdrawable') do |expected_withdrawable_money_rub|
   balance = Repositories::BalanceRepository.fetch
-
   expect(balance.withdrawable_money_rub.value).to eq(expected_withdrawable_money_rub)
 end

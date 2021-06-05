@@ -26,9 +26,19 @@ module Repositories
           "type" => investment.type,
           "name" => investment.name,
           "status" => investment.status,
+          "initial_price" => {
+            "currency" => investment.initial_price_currency,
+            "value" => investment.initial_price_value,
+            "income" => investment.initial_price_income,
+            "income_of_income" => investment.initial_price_income_of_income,
+            "income_of_income_of_income" => investment.initial_price_income_of_income_of_income,
+          },
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,
+            "income" => investment.price_income,
+            "income_of_income" => investment.price_income_of_income,
+            "income_of_income_of_income" => investment.price_income_of_income_of_income,
           }
         }
       end      
@@ -57,8 +67,9 @@ module Repositories
       balance = Balance.new(id: balace_record.id, cash: cash)
       balance.investments = investments_data.map do |investment|
         klass = investment["type"] == "apartment" ? Investments::ApartmentInvestment : Investments::StockInvestment
-        price = money_creator.build(currency: investment.dig("price","currency"), value: investment.dig("price","value"))
-        klass.new(name: investment["name"], initial_price: price, balance: balance, status: investment["status"])
+        initial_price = money_creator.build(currency: investment.dig("initial_price","currency"), value: investment.dig("initial_price", "value"), income: investment.dig("initial_price", "income"), income_of_income: investment.dig("initial_price", "income_of_income"), income_of_income_of_income: investment.dig("initial_price", "income_of_income_of_income"))
+        price = money_creator.build(currency: investment.dig("price","currency"), value: investment.dig("price", "value"), income: investment.dig("price", "income"), income_of_income: investment.dig("price", "income_of_income"), income_of_income_of_income: investment.dig("price", "income_of_income_of_income"))
+        klass.new(name: investment["name"], initial_price: initial_price, price: price, balance: balance, status: investment["status"])
       end
       balance
     end
@@ -89,9 +100,19 @@ module Repositories
           "type" => investment.type,
           "name" => investment.name,
           "status" => investment.status,
+          "initial_price" => {
+            "currency" => investment.initial_price_currency,
+            "value" => investment.initial_price_value,
+            "income" => investment.initial_price_income,
+            "income_of_income" => investment.initial_price_income_of_income,
+            "income_of_income_of_income" => investment.initial_price_income_of_income_of_income,
+          },
           "price" => {
             "currency" => investment.price_currency,
             "value" => investment.price_value,
+            "income" => investment.price_income,
+            "income_of_income" => investment.price_income_of_income,
+            "income_of_income_of_income" => investment.price_income_of_income_of_income,
           }
         }
       end

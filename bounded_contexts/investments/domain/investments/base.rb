@@ -1,6 +1,7 @@
 module Investments
   class Base
     attr_reader :name, :initial_price, :price, :total_earnings, :total_costs, :balance, :status
+    attr_writer :status
     private :balance
 
     def initialize(name:, initial_price:, balance:, price: nil, status: nil)
@@ -26,6 +27,26 @@ module Investments
       self.class::TYPE
     end
       
+    def initial_price_value
+      initial_price.value
+    end
+
+    def initial_price_currency
+      initial_price.currency
+    end
+
+    def initial_price_income
+      initial_price.income
+    end
+
+    def initial_price_income_of_income
+      initial_price.income_of_income
+    end
+
+    def initial_price_income_of_income_of_income
+      initial_price.income_of_income_of_income
+    end
+
     def price_value
       price.value
     end
@@ -34,13 +55,29 @@ module Investments
       price.currency
     end
 
+    def price_income
+      price.income
+    end
+
+    def price_income_of_income
+      price.income_of_income
+    end
+
+    def price_income_of_income_of_income
+      price.income_of_income_of_income
+    end
+
     def value(currency)
       @price.exchange(currency).value
     end
 
     def open
+      @status = "pending"
       @balance.notify(self, 'investment_opening_request')
-      @status = 'opened'
+    end
+
+    def mark_opened
+      @status = "opened"
     end
 
     def receive_earnings(earnings)
@@ -66,8 +103,8 @@ module Investments
       @status = 'closed'
     end
 
-    def change_price(price)
-      @price = price
+    def change_price(new_price)
+      @price = new_price
     end
 
     def take_profit

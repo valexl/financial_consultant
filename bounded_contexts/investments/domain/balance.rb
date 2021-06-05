@@ -95,6 +95,7 @@ class Balance
   def open_investment(investment)
     return unless cash.enough_money?(investment.price)
     cash.subtract(investment.price)
+    investment.mark_opened
     investments.push(investment)
   end
 
