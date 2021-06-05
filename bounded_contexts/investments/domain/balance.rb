@@ -45,8 +45,6 @@ class Balance
       reimburse_costs(source)
     when 'investment_closed'
       confirm_closing_investment(source)
-    when 'profit_taken'
-      take_investment_profit(source)
     end
   end
 
@@ -117,9 +115,5 @@ class Balance
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
     cash.add(investment.net_interest_income)
     @investments -= [investment]
-  end
-
-  def take_investment_profit(money)
-    cash.add(money)
   end
 end

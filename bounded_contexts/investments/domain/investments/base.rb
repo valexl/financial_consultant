@@ -110,14 +110,6 @@ module Investments
       @price = new_price
     end
 
-    def take_profit
-      price = @price.convert_to_the_same_proportion(@initial_price)
-      delta_price = price - @initial_price
-      delta_price = delta_price.move_all_to_one_level if delta_price.positive?
-      change_price(delta_price)
-      @balance.notify(delta_price, 'profit_taken')
-    end
-
     def delta_price
       price = @price.convert_to_the_same_proportion(@initial_price)
       result = price - @initial_price
