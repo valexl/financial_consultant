@@ -6,10 +6,10 @@ class Money
     @currency = currency
     @items = items
     @items ||= [
+      Item.new(value: 0, level: 0),
       Item.new(value: 0, level: 1),
       Item.new(value: 0, level: 2),
-      Item.new(value: 0, level: 3),
-      Item.new(value: 0, level: 4)
+      Item.new(value: 0, level: 3)
     ]
   end
 
