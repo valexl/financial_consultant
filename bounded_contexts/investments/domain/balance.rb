@@ -32,7 +32,7 @@ class Balance
   end
 
   def take(money)
-    cash.subtract(money)
+    cash.take(money)
   end
 
   def notify(source, event)
@@ -93,10 +93,14 @@ class Balance
   private
 
   def open_investment(investment)
-    return unless cash.enough_money?(investment.price)
-    cash.subtract(investment.price)
+    return investment unless cash.enough_money?(investment.price)
+
+    money = cash.take(investment.price)
+
+    investment.add_costs(money)
     investment.mark_opened
     investments.push(investment)
+    return investment
   end
 
   def receive_earnings(earnings)
@@ -104,7 +108,7 @@ class Balance
   end
 
   def reimburse_costs(costs)
-    cash.subtract(costs)
+    cash.take(costs)
   end
 
   def confirm_closing_investment(investment)

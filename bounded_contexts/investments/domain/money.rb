@@ -17,28 +17,12 @@ class Money
     value.to_s
   end
 
-  def +(other)
-    return self if other.currency != currency
-
-    result = []
-    items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value + other.items[level].value, level: level)
-    end
-    new_money = self.class.new(currency: currency)
-    new_money.set_items(result)
-    new_money
+  def +(money)
+    add(money)
   end
 
   def -(other)
-    return self if other.currency != currency
-
-    result = []
-    items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value - other.items[level].value, level: level)
-    end
-    new_money = self.class.new(currency: currency)
-    new_money.set_items(result)
-    new_money
+    subtract(other)
   end
 
   def >=(other)
@@ -77,7 +61,8 @@ class Money
     items_iterator.each_with_level do |item, level|
       result << Item.new(value: item.value + money.items[level].value, level: level)
     end
-    @items = result
+
+    self.class.new currency: currency, items: result
   end
 
   def subtract(money)
@@ -89,7 +74,8 @@ class Money
     items_iterator.each_with_level do |item, level|
       result << Item.new(value: item.value - money.items[level].value, level: level)
     end
-    @items = result
+
+    self.class.new currency: currency, items: result
   end
 
   def withdrawable

@@ -26,6 +26,10 @@ module Investments
     def type
       self.class::TYPE
     end
+
+    def add_costs(costs)
+      @total_costs += costs
+    end
       
     def initial_price_value
       initial_price.value
@@ -93,8 +97,7 @@ module Investments
 
     def reimburse_costs(costs)
       return if @status == 'closed'
-
-      @total_costs += costs
+      add_costs(costs)
       @balance.notify(costs, 'investment_costs_reimbursing_request')
     end
 

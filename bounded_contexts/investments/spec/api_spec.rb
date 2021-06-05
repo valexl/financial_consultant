@@ -131,7 +131,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             },
             "total_costs" => {
               "currency" => "USD",
-              "value" => 0
+              "value" => 1000
             }
           },
         }
@@ -171,7 +171,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             },
             "total_costs" => {
               "currency" => "USD",
-              "value" => 0
+              "value" => 1000
             }
           },
         }
