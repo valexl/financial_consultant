@@ -4,14 +4,14 @@ module Investments
     attr_writer :status
     private :balance
 
-    def initialize(name:, initial_price:, balance:, total_costs: nil, total_earning: nil, price: nil, status: nil)
+    def initialize(name:, initial_price:, balance:, total_costs: nil, total_earnings: nil, price: nil, status: nil)
       @name = name
       @initial_price = initial_price
       @price = price || initial_price
       ############
       ## TODO: avoid using direct creation. This is a hotfix
       ############
-      @total_earnings = total_earning ||= Money.new(currency: initial_price.currency)
+      @total_earnings = total_earnings ||= Money.new(currency: initial_price.currency)
       @total_costs = total_costs ||= Money.new(currency: initial_price.currency)
       ############
       ############
@@ -77,6 +77,46 @@ module Investments
 
     def price_income_of_income_of_income
       price.income_of_income_of_income
+    end
+
+    def total_costs_value
+      total_costs.value
+    end
+
+    def total_costs_currency
+      total_costs.currency
+    end
+
+    def total_costs_income
+      total_costs.income
+    end
+
+    def total_costs_income_of_income
+      total_costs.income_of_income
+    end
+
+    def total_costs_income_of_income_of_income
+      total_costs.income_of_income_of_income
+    end
+
+    def total_earnings_value
+      total_earnings.value
+    end
+
+    def total_earnings_currency
+      total_earnings.currency
+    end
+
+    def total_earnings_income
+      total_earnings.income
+    end
+
+    def total_earnings_income_of_income
+      total_earnings.income_of_income
+    end
+
+    def total_earnings_income_of_income_of_income
+      total_earnings.income_of_income_of_income
     end
 
     def value(currency)

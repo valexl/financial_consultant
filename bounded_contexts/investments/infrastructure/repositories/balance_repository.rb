@@ -53,7 +53,8 @@ module Repositories
         initial_price = money_creator.build(currency: investment.dig("initial_price","currency"), value: investment.dig("initial_price", "value"), income: investment.dig("initial_price", "income"), income_of_income: investment.dig("initial_price", "income_of_income"), income_of_income_of_income: investment.dig("initial_price", "income_of_income_of_income"))
         price = money_creator.build(currency: investment.dig("price","currency"), value: investment.dig("price", "value"), income: investment.dig("price", "income"), income_of_income: investment.dig("price", "income_of_income"), income_of_income_of_income: investment.dig("price", "income_of_income_of_income"))
         total_costs = money_creator.build(currency: investment.dig("total_costs","currency"), value: investment.dig("total_costs", "value"), income: investment.dig("total_costs", "income"), income_of_income: investment.dig("total_costs", "income_of_income"), income_of_income_of_income: investment.dig("total_costs", "income_of_income_of_income"))
-        klass.new(name: investment["name"], initial_price: initial_price, price: price, total_costs: total_costs, balance: balance, status: investment["status"])
+        total_earnings = money_creator.build(currency: investment.dig("total_earnings","currency"), value: investment.dig("total_earnings", "value"), income: investment.dig("total_earnings", "income"), income_of_income: investment.dig("total_earnings", "income_of_income"), income_of_income_of_income: investment.dig("total_earnings", "income_of_income_of_income"))
+        klass.new(name: investment["name"], initial_price: initial_price, price: price, total_costs: total_costs, total_earnings: total_earnings, balance: balance, status: investment["status"])
       end
       balance
     end
@@ -107,11 +108,18 @@ module Repositories
             "income_of_income_of_income" => investment.price_income_of_income_of_income,
           },
           "total_costs" => {
-            "currency" => investment.total_costs.currency,
-            "value" => investment.total_costs.value,
-            "income" => investment.total_costs.income,
-            "income_of_income" => investment.total_costs.income_of_income,
-            "income_of_income_of_income" => investment.total_costs.income_of_income_of_income,
+            "currency" => investment.total_costs_currency,
+            "value" => investment.total_costs_value,
+            "income" => investment.total_costs_income,
+            "income_of_income" => investment.total_costs_income_of_income,
+            "income_of_income_of_income" => investment.total_costs_income_of_income_of_income,
+          },
+          "total_earnings" => {
+            "currency" => investment.total_earnings_currency,
+            "value" => investment.total_earnings_value,
+            "income" => investment.total_earnings_income,
+            "income_of_income" => investment.total_earnings_income_of_income,
+            "income_of_income_of_income" => investment.total_earnings_income_of_income_of_income,
           }
         }
     end
