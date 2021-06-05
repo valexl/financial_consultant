@@ -37,14 +37,14 @@ class Balance
 
   def notify(source, event)
     case event
-    when 'investment_opening_request'
+    when 'open_investment'
       open_investment(source)
     when 'investment_earnings_receiving_request'
       receive_earnings(source)
     when 'investment_costs_reimbursing_request'
       reimburse_costs(source)
-    when 'investment_closed'
-      confirm_closing_investment(source)
+    when 'close_investment'
+      close_investment(source)
     end
   end
 
@@ -98,6 +98,7 @@ class Balance
     investment.add_costs(money)
     investment.mark_opened
     investments.push(investment)
+
     return investment
   end
 
@@ -109,11 +110,14 @@ class Balance
     cash.take(costs)
   end
 
-  def confirm_closing_investment(investment)
-    cash.add(investment.initial_price)
+  def close_investment(investment)
+    return investment unless investment.opened?
     cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
     cash.add(investment.net_interest_income)
+    investment.mark_closed
     @investments -= [investment]
+
+    return investment
   end
 end

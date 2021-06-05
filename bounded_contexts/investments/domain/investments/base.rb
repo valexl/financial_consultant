@@ -4,21 +4,29 @@ module Investments
     attr_writer :status
     private :balance
 
-    def initialize(name:, initial_price:, balance:, price: nil, status: nil)
+    def initialize(name:, initial_price:, balance:, total_costs: nil, total_earning: nil, price: nil, status: nil)
       @name = name
       @initial_price = initial_price
       @price = price || initial_price
       ############
       ## TODO: avoid using direct creation. This is a hotfix
       ############
-      @total_earnings = Money.new(currency: initial_price.currency)
-      @total_costs = Money.new(currency: initial_price.currency)
+      @total_earnings = total_earning ||= Money.new(currency: initial_price.currency)
+      @total_costs = total_costs ||= Money.new(currency: initial_price.currency)
       ############
       ############
       @balance = balance
       @status = status
     end
 
+    def opened?
+      @status == "opened"
+    end
+
+    def closed?
+      @status == "closed"
+    end
+    
     def balance_id
       balance.id
     end
@@ -77,15 +85,19 @@ module Investments
 
     def open
       @status = "pending"
-      @balance.notify(self, 'investment_opening_request')
+      @balance.notify(self, 'open_investment')
     end
 
     def mark_opened
       @status = "opened"
     end
 
+    def mark_closed
+      @status = "closed"
+    end
+
     def receive_earnings(earnings)
-      return if @status == 'closed'
+      return if closed?
 
       @total_earnings = if @total_earnings.nil?
                           earnings
@@ -96,14 +108,13 @@ module Investments
     end
 
     def reimburse_costs(costs)
-      return if @status == 'closed'
+      return if closed?
       add_costs(costs)
       @balance.notify(costs, 'investment_costs_reimbursing_request')
     end
 
     def close
-      @balance.notify(self, 'investment_closed')
-      @status = 'closed'
+      @balance.notify(self, 'close_investment')
     end
 
     def change_price(new_price)

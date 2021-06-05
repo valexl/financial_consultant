@@ -7,8 +7,10 @@ Given('opened investment prices {float} {string}') do |investment_price, currenc
   )
   balance = Balance.new(cash: cash, investments: [])
   balance.investments = []
-  
+
   price = $money_creator.public_send("build_#{currency.downcase}", value: investment_price)
+  balance.replenish(price)
+  
   @investment = balance.open_apartment_investment(name: 'test', price: price)
   balance.investments << @investment
   
