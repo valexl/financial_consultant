@@ -69,10 +69,50 @@ class Money
     return self if money.currency != currency
     return self unless money.positive?
     return self if self < money
+    subtrahend_items = [
+      Item.new(value: money.initial_value, level: 0),
+      Item.new(value: money.income, level: 1),
+      Item.new(value: money.income_of_income, level: 2),
+      Item.new(value: money.income_of_income_of_income, level: 3),
+    ]
 
-    result = []
-    items_iterator.each_with_level do |item, level|
-      result << Item.new(value: item.value - money.items[level].value, level: level)
+
+    result = [
+      Item.new(value: initial_value, level: 0),
+      Item.new(value: income, level: 1),
+      Item.new(value: income_of_income, level: 2),
+      Item.new(value: income_of_income_of_income, level: 3),
+    ]
+
+    value_from_previous_level = 0
+    (0..3).reverse_each do |level|
+      diff = result[level].value - (subtrahend_items[level].value + value_from_previous_level)
+      if diff >= 0
+        result[level].value = diff
+        (level..3).each do |index|
+          subtrahend_items[index].value = 0
+        end
+        value_from_previous_level = 0
+      else
+        result[level].value = 0
+        subtrahend_items[level].value = - diff 
+        value_from_previous_level = - diff
+      end
+    end
+
+    subtrahend_items.each_with_index do |item, level|
+      next if item.value.zero?
+      level_was_covered = false
+      result.each_with_index do |result_item, result_level|
+        next if level_was_covered
+        if result_item.value >= item.value
+          result_item.value = result_item.value - item.value
+          level_was_covered = true
+        else
+          item.value = item.value - result_item.value
+          result_item.value = 0
+        end
+      end
     end
 
     self.class.new currency: currency, items: result
