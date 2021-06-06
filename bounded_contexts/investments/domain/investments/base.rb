@@ -38,6 +38,10 @@ module Investments
     def add_costs(costs)
       @total_costs += costs
     end
+
+    def add_earnings(earnings)
+      @total_earnings += earnings
+    end
       
     def initial_price_value
       initial_price.value
@@ -138,12 +142,7 @@ module Investments
 
     def receive_earnings(earnings)
       return if closed?
-
-      @total_earnings = if @total_earnings.nil?
-                          earnings
-                        else
-                          @total_earnings + earnings
-                        end
+      add_earnings(earnings)
       @balance.notify(earnings, 'investment_earnings_receiving_request')
     end
 
@@ -154,6 +153,12 @@ module Investments
     end
 
     def close
+      price_diffrence = delta_price
+      if delta_price.positive?
+        add_earnings(price_diffrence)
+      else
+        add_costs(price_diffrence)
+      end
       @balance.notify(self, 'close_investment')
     end
 
@@ -162,16 +167,13 @@ module Investments
     end
 
     def delta_price
-      price = @price.convert_to_the_same_proportion(@initial_price)
-      result = price - @initial_price
+      result = @price - @initial_price
       result = result.move_all_to_one_level if result.positive?
       result
     end
 
     # https://en.wikipedia.org/wiki/Net_interest_income
     def net_interest_income
-      price = @price.convert_to_the_same_proportion(@initial_price)
-
       total_earnings = @total_earnings.convert_to_the_same_proportion(@initial_price)
       total_costs = @total_costs.convert_to_the_same_proportion(@initial_price)
 

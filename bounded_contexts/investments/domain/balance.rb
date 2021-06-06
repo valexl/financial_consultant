@@ -114,7 +114,7 @@ class Balance
     return investment unless investment.opened?
     cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
-    cash.add(investment.net_interest_income)
+
     investment.mark_closed
     @investments -= [investment]
 
