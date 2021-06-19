@@ -1,16 +1,20 @@
 require 'spec_helper'
 
 RSpec.describe Money do
-  let(:money) { Money.new(currency: currency, items: items) }
-  let(:currency) { Currency::USD }
-  let(:items) do 
-    [
-      Money::Item.new(value: initial_value, level: 0),
-      Money::Item.new(value: income, level: 1),
-      Money::Item.new(value: income_of_income, level: 2),
-      Money::Item.new(value: income_of_income_of_income, level: 3)
-    ]
+  let(:money) do 
+    money_creator.build(
+      currency: currency, 
+      initial_value: initial_value, 
+      income: income, 
+      income_of_income: income_of_income, 
+      income_of_income_of_income: income_of_income_of_income
+    )
   end
+  let(:money_creator) do
+    money_builder = MoneyBuilder.new
+    MoneyCreator.new(money_builder)
+  end
+  let(:currency) { Currency::USD }
   let(:initial_value) { 1000 }
   let(:income) { 100 }
   let(:income_of_income) { 10 }
@@ -27,16 +31,16 @@ RSpec.describe Money do
   describe "#add" do
     subject(:add) { money.add(another_money) }
     
-    let(:another_money) { Money.new(currency: another_currency, items: another_items) }
-    let(:another_currency) { Currency::USD }
-    let(:another_items) do 
-      [
-        Money::Item.new(value: another_initial_value, level: 0),
-        Money::Item.new(value: another_income, level: 1),
-        Money::Item.new(value: another_income_of_income, level: 2),
-        Money::Item.new(value: another_income_of_income_of_income, level: 3)
-      ]
+    let(:another_money) do
+      money_creator.build(
+        currency: another_currency, 
+        initial_value: another_initial_value, 
+        income: another_income, 
+        income_of_income: another_income_of_income, 
+        income_of_income_of_income: another_income_of_income_of_income
+      )
     end
+    let(:another_currency) { Currency::USD }
     let(:another_initial_value) { 1000 }
     let(:another_income) { 100 }
     let(:another_income_of_income) { 10 }
@@ -46,26 +50,32 @@ RSpec.describe Money do
 
     it "increases items per level" do
       new_money = add
-      expect(new_money.items[0].value).to eq(2000)
-      expect(new_money.items[1].value).to eq(200)
-      expect(new_money.items[2].value).to eq(20)
-      expect(new_money.items[3].value).to eq(2)
+      expect(new_money.initial_value).to eq(2000)
+      expect(new_money.income).to eq(200)
+      expect(new_money.income_of_income).to eq(20)
+      expect(new_money.income_of_income_of_income).to eq(2)
+    end
+
+    it "doesn't change original object" do
+      expect { 
+        add
+      }.not_to change { money.value }
     end
   end
 
   describe "#subtract" do
     subject(:subtract) { money.subtract(another_money) }
     
-    let(:another_money) { Money.new(currency: another_currency, items: another_items) }
-    let(:another_currency) { Currency::USD }
-    let(:another_items) do 
-      [
-        Money::Item.new(value: another_initial_value, level: 0),
-        Money::Item.new(value: another_income, level: 1),
-        Money::Item.new(value: another_income_of_income, level: 2),
-        Money::Item.new(value: another_income_of_income_of_income, level: 3)
-      ]
+    let(:another_money) do
+      money_creator.build(
+        currency: another_currency, 
+        initial_value: another_initial_value, 
+        income: another_income, 
+        income_of_income: another_income_of_income, 
+        income_of_income_of_income: another_income_of_income_of_income
+      )
     end
+    let(:another_currency) { Currency::USD }
     let(:another_initial_value) { 1000 }
     let(:another_income) { 100 }
     let(:another_income_of_income) { 10 }
@@ -73,12 +83,18 @@ RSpec.describe Money do
 
     it {  expect(subtract).to be_a(Money) }
 
+    it "doesn't change original object" do
+      expect { 
+        subtract
+      }.not_to change { money.value }
+    end
+
     it "decreases items per level" do
       new_money = subtract
-      expect(new_money.items[0].value).to eq(0)
-      expect(new_money.items[1].value).to eq(0)
-      expect(new_money.items[2].value).to eq(0)
-      expect(new_money.items[3].value).to eq(0)
+      expect(new_money.initial_value).to eq(0)
+      expect(new_money.income).to eq(0)
+      expect(new_money.income_of_income).to eq(0)
+      expect(new_money.income_of_income_of_income).to eq(0)
     end
 
     context "when another money doesn't have any income and has only initial value" do
@@ -90,10 +106,10 @@ RSpec.describe Money do
 
         it "takes missed money from the incomes" do
           new_money = subtract
-          expect(new_money.items[0].value).to eq(0)
-          expect(new_money.items[1].value).to eq(0)
-          expect(new_money.items[2].value).to eq(0)
-          expect(new_money.items[3].value).to eq(0)
+          expect(new_money.initial_value).to eq(0)
+          expect(new_money.income).to eq(0)
+          expect(new_money.income_of_income).to eq(0)
+          expect(new_money.income_of_income_of_income).to eq(0)
         end
       end
 
@@ -111,10 +127,10 @@ RSpec.describe Money do
   
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.items[0].value).to eq(100)
-            expect(new_money.items[1].value).to eq(100)
-            expect(new_money.items[2].value).to eq(10)
-            expect(new_money.items[3].value).to eq(1)
+            expect(new_money.initial_value).to eq(100)
+            expect(new_money.income).to eq(100)
+            expect(new_money.income_of_income).to eq(10)
+            expect(new_money.income_of_income_of_income).to eq(1)
           end
         end
 
@@ -131,10 +147,10 @@ RSpec.describe Money do
   
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.items[0].value).to eq(200)
-            expect(new_money.items[1].value).to eq(0)
-            expect(new_money.items[2].value).to eq(10)
-            expect(new_money.items[3].value).to eq(1)
+            expect(new_money.initial_value).to eq(200)
+            expect(new_money.income).to eq(0)
+            expect(new_money.income_of_income).to eq(10)
+            expect(new_money.income_of_income_of_income).to eq(1)
           end
         end
 
@@ -151,10 +167,10 @@ RSpec.describe Money do
 
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.items[0].value).to eq(210)
-            expect(new_money.items[1].value).to eq(0)
-            expect(new_money.items[2].value).to eq(0)
-            expect(new_money.items[3].value).to eq(1)
+            expect(new_money.initial_value).to eq(210)
+            expect(new_money.income).to eq(0)
+            expect(new_money.income_of_income).to eq(0)
+            expect(new_money.income_of_income_of_income).to eq(1)
           end
         end
   
@@ -172,13 +188,40 @@ RSpec.describe Money do
   
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.items[0].value).to eq(0)
-            expect(new_money.items[1].value).to eq(0)
-            expect(new_money.items[2].value).to eq(0)
-            expect(new_money.items[3].value).to eq(1)
+            expect(new_money.initial_value).to eq(0)
+            expect(new_money.income).to eq(0)
+            expect(new_money.income_of_income).to eq(0)
+            expect(new_money.income_of_income_of_income).to eq(1)
           end
         end
       end
+    end
+  end
+
+  describe "#take" do
+    subject(:take) { money.take(taken_value) }
+
+    let(:taken_value) { 1000 }
+
+    it { is_expected.to be_a(Money) }
+
+    it "decreases value for current money by taken_value" do
+      expect {
+        take
+      }.to change { money.value }.from(1111).to(111)
+    end
+
+    it "returns money object with value equals taken_value" do
+      new_money = take
+      expect(new_money.value).to eq(taken_value)
+    end
+
+    it "returns object that has initial_value, income, income_of_income and income_of_income_of_income in the same proportions as money" do
+      new_money = take
+      expect(new_money.initial_value).to eq(900.09)
+      expect(new_money.income).to eq(90.009)
+      expect(new_money.income_of_income).to eq(9.0009)
+      expect(new_money.income_of_income_of_income).to eq(0.9001)
     end
   end
 end

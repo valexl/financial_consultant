@@ -37,6 +37,32 @@ class Money
     value < other.value
   end
 
+  def take(amount)
+    # it looks like side-effect function... 
+    given_income_of_income_of_income = (amount * income_of_income_of_income_in_percent).round(4)
+    given_income_of_income = (amount * income_of_income_in_percent).round(4)
+    given_income = (amount * income_in_percent).round(4)
+    given_initial_value = amount - (given_income + given_income_of_income + given_income_of_income_of_income)
+
+    money = self.class.new(
+      currency: currency,
+      items: [
+        Item.new(value: given_initial_value, level: 0),
+        Item.new(value: given_income, level: 1),
+        Item.new(value: given_income_of_income, level: 2),
+        Item.new(value: given_income_of_income_of_income, level: 3),
+      ]
+    )
+
+    new_money = self - money
+    self.initial_value = new_money.initial_value
+    self.income = new_money.income
+    self.income_of_income = new_money.income_of_income
+    self.income_of_income_of_income = new_money.income_of_income_of_income
+
+    money
+  end
+
   def positive?
     value.positive?
   end
@@ -47,10 +73,7 @@ class Money
       new_value = Currency.exchange(item.value, currency, new_currency)
       result << Item.new(value: new_value, level: level)
     end
-    money = self.class.new
-    money.currency = new_currency
-    money.set_items(result)
-    money
+    self.class.new currency: new_currency, items: result
   end
 
   def add(money)
@@ -114,7 +137,10 @@ class Money
         end
       end
     end
-
+    result = result.map do |item|
+      item.value = item.value.round(4)
+      item
+    end
     self.class.new currency: currency, items: result
   end
 
@@ -123,15 +149,6 @@ class Money
     money.currency = currency
     money.income_of_income_of_income = withdrawable_items_iterator.sum { |item| item.value }
     money
-  end
-
-  def convert_to_the_same_proportion(money)
-    new_money = self.class.new(currency: currency)
-    new_money.income_of_income_of_income = value * money.income_of_income_of_income_in_percent
-    new_money.income_of_income = value * money.income_of_income_in_percent
-    new_money.income = value * money.income_in_percent
-    new_money.initial_value = value - new_money.income_of_income_of_income - new_money.income_of_income - new_money.income
-    new_money
   end
 
   def move_all_to_one_level
