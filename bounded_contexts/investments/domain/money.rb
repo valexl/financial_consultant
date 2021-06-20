@@ -123,7 +123,7 @@ class Money
     given_income_of_income_of_income = (amount * income_of_income_of_income_in_percent).round(4)
     given_income_of_income = (amount * income_of_income_in_percent).round(4)
     given_income = (amount * income_in_percent).round(4)
-    given_initial_value = amount - (given_income + given_income_of_income + given_income_of_income_of_income)
+    given_initial_value = (amount - (given_income + given_income_of_income + given_income_of_income_of_income)).round(4)
 
     money = self.class.new(
       currency: currency,
@@ -151,7 +151,7 @@ class Money
   end
 
   def value
-    initial_value + income + income_of_income + income_of_income_of_income
+    (initial_value + income + income_of_income + income_of_income_of_income).round(4)
   end
 
   def initial_value_in_percent

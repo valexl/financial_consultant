@@ -219,8 +219,35 @@ RSpec.describe Money do
   end
 
   describe "#split" do
-    subject(:split) { raise 'Implement me' }
+    subject(:split) { money.split(value) }
 
-    it { is_expected.not_to raise_error }
+    let(:initial_value) { 10000 }
+    let(:income) { 1000 }
+    let(:income_of_income) { 100 }
+    let(:income_of_income_of_income) { 10 }
+
+
+    let(:value) { 1000 }
+
+    it { is_expected.to be_a(Array) }
+
+    it "returns an array of Money" do
+      money1, money2 = split
+      expect(money1).to be_a(Money)
+      expect(money2).to be_a(Money)
+    end
+
+    it "returns moneies with the same total value as original" do
+      money1, money2 = split
+      expect(money1.value + money2.value).to eq(money.value)
+    end
+
+    it "returns monies with the same proportion as original money" do
+      money1, money2 = split
+      expect(money1.initial_value).to eq(9099.91)
+      expect(money1.income).to eq(909.991)
+      expect(money1.income_of_income).to eq(90.9991)
+      expect(money1.income_of_income_of_income).to eq(9.0999)
+    end
   end
 end
