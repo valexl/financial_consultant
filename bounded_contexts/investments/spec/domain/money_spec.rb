@@ -11,8 +11,7 @@ RSpec.describe Money do
     )
   end
   let(:money_creator) do
-    money_builder = MoneyBuilder.new
-    MoneyCreator.new(money_builder)
+    MoneyCreator.new
   end
   let(:currency) { Currency::USD }
   let(:initial_value) { 1000 }
@@ -89,7 +88,7 @@ RSpec.describe Money do
       }.not_to change { money.value }
     end
 
-    it "decreases items per level" do
+    it "changes all levels" do
       new_money = subtract
       expect(new_money.initial_value).to eq(0)
       expect(new_money.income).to eq(0)
@@ -106,6 +105,7 @@ RSpec.describe Money do
 
         it "takes missed money from the incomes" do
           new_money = subtract
+
           expect(new_money.initial_value).to eq(0)
           expect(new_money.income).to eq(0)
           expect(new_money.income_of_income).to eq(0)
@@ -198,30 +198,29 @@ RSpec.describe Money do
     end
   end
 
-  describe "#take" do
-    subject(:take) { money.take(taken_value) }
+  describe "#clone" do
+    subject(:do_clone) { money.clone(given_value) }
 
-    let(:taken_value) { 1000 }
+    let(:cloned_money) { do_clone }
+    let(:given_value) { money.value * 10 }
 
     it { is_expected.to be_a(Money) }
 
-    it "decreases value for current money by taken_value" do
-      expect {
-        take
-      }.to change { money.value }.from(1111).to(111)
+    it "returns object with value equals given_value" do
+      expect(cloned_money.value).to eq(given_value)
     end
 
-    it "returns money object with value equals taken_value" do
-      new_money = take
-      expect(new_money.value).to eq(taken_value)
+    it "generates initial_value, income, income_of_income, income_of_income_of_income with the same proportions as in original object" do
+      expect(cloned_money.initial_value).to eq(initial_value * 10)
+      expect(cloned_money.income).to eq(income * 10)
+      expect(cloned_money.income_of_income).to eq(income_of_income * 10)
+      expect(cloned_money.income_of_income_of_income).to eq(income_of_income_of_income * 10)
     end
+  end
 
-    it "returns object that has initial_value, income, income_of_income and income_of_income_of_income in the same proportions as money" do
-      new_money = take
-      expect(new_money.initial_value).to eq(900.09)
-      expect(new_money.income).to eq(90.009)
-      expect(new_money.income_of_income).to eq(9.0009)
-      expect(new_money.income_of_income_of_income).to eq(0.9001)
-    end
+  describe "#split" do
+    subject(:split) { raise 'Implement me' }
+
+    it { is_expected.not_to raise_error }
   end
 end

@@ -27,12 +27,61 @@ class Money
 
   def -(money)
     return self if money.currency != currency
+
+    subtrahend_items = [
+      money.initial_value,
+      money.income,
+      money.income_of_income,
+      money.income_of_income_of_income
+    ]
+    result = [
+      initial_value,
+      income,
+      income_of_income,
+      income_of_income_of_income
+    ]
+
+    value_from_previous_level = 0
+    (0..3).reverse_each do |level|
+      diff = result[level] - (subtrahend_items[level] + value_from_previous_level)
+      if diff >= 0
+        result[level] = diff
+        (level..3).each do |index|
+          subtrahend_items[index] = 0
+        end
+        value_from_previous_level = 0
+      else
+        result[level] = 0
+        subtrahend_items[level] = - diff 
+        value_from_previous_level = - diff
+      end
+    end
+    subtrahend_items.each_with_index do |item, level|
+      next if item.zero?
+      level_was_covered = false
+      result.each_with_index do |result_item, result_level|
+        next if result_item.zero?
+        next if level_was_covered
+        if result_item >= item
+          result[result_level] = result_item - item
+          level_was_covered = true
+        else
+          item = item - result_item
+          result[result_level] = 0
+        end
+      end
+    end  
+
+    result = result.map do |item|
+      item.round(4)
+    end  
+
     self.class.new(
       currency: currency,
-      initial_value: (initial_value - money.initial_value).round(4),
-      income: (income - money.income).round(4),
-      income_of_income: (income_of_income - money.income_of_income).round(4),
-      income_of_income_of_income: (income_of_income_of_income - money.income_of_income_of_income).round(4),
+      initial_value: result[0].round(4),
+      income: result[1].round(4),
+      income_of_income: result[2].round(4),
+      income_of_income_of_income: result[3].round(4),
     )
   end  
 

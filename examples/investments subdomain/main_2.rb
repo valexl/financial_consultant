@@ -146,9 +146,6 @@ end
 #####################################
 
 class MoneyCreator
-  def initialize
-  end
-
   def build(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0, currency:)
     Money.new(
       currency: currency,
