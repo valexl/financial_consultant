@@ -27,7 +27,7 @@ class Money
 
   def -(money)
     return self if money.currency != currency
-
+    # Do we really need that? Why can't we just allow negative values as anyway it won't affect value
     subtrahend_items = [
       money.initial_value,
       money.income,

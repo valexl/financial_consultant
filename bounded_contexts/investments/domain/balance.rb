@@ -15,12 +15,14 @@ class Balance
     cash.value(currency) + investments.sum { |i| i.value(currency) }
   end
 
-  def notify(source, event)
+  def notify(event, *args)
     case event
     when "open_investment"
-      open_investment(source)
+      open_investment(*args)
     when "close_investment"
-      close_investment(source)
+      close_investment(*args)
+    when "add_expense"
+      add_expense(*args)
     end
   end
 
@@ -37,5 +39,10 @@ class Balance
     @cash.add(investment.invested_money)
     @cash.add(investment.profit)
     @cash.subtract(investment.loss)
+  end
+
+  def add_expense(investment, expense)
+    money = cash.take(currency: expense.currency, value: expense.value)
+    investment.invest_money(money)
   end
 end

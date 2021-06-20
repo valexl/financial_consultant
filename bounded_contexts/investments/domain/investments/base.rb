@@ -29,6 +29,10 @@ module Investments
       @price = new_price
     end
 
+    def add_expense(expense)
+      @balance.notify("add_expense", self, expense)
+    end
+
     def profit
       return invested_money.clone(0) unless price_difference.positive?
       invested_money
@@ -43,11 +47,11 @@ module Investments
     end
 
     def open
-      @balance.notify(self, "open_investment")
+      @balance.notify("open_investment", self)
     end
 
     def close
-      @balance.notify(self, "close_investment")
+      @balance.notify("close_investment", self)
     end
 
     private
