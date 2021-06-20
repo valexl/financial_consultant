@@ -36,5 +36,6 @@ class Balance
     @investments = @investments - [investment]
     @cash.add(investment.invested_money)
     @cash.add(investment.profit)
+    @cash.subtract(investment.loss)
   end
 end

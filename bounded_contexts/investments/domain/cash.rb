@@ -16,6 +16,12 @@ class Cash
     @usd_money = @usd_money + money
   end
 
+  def subtract(money)
+    @rub_money = @rub_money - money
+    @eur_money = @eur_money - money
+    @usd_money = @usd_money - money
+  end
+
   def money(currency)
     case currency
     when @rub_money.currency

@@ -30,9 +30,16 @@ module Investments
     end
 
     def profit
+      return invested_money.clone(0) unless price_difference.positive?
       invested_money
-        .clone(price_value - invested_money.value)
+        .clone(price_difference)
         .lock_in_profits
+    end
+
+    def loss
+      return invested_money.clone(0) if price_difference.positive?
+      invested_money
+        .clone(-price_difference)
     end
 
     def open
@@ -41,6 +48,12 @@ module Investments
 
     def close
       @balance.notify(self, "close_investment")
+    end
+
+    private
+
+    def price_difference
+      price_value - invested_money.value
     end
   end
 end
