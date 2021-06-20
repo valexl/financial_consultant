@@ -33,6 +33,10 @@ module Investments
       @balance.notify("add_expense", self, expense)
     end
 
+    def add_dividend(dividend)
+      @balance.notify("add_dividend", self, dividend)
+    end
+
     def profit
       return invested_money.clone(0) unless price_difference.positive?
       invested_money

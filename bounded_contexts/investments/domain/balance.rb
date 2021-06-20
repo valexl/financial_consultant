@@ -23,6 +23,8 @@ class Balance
       close_investment(*args)
     when "add_expense"
       add_expense(*args)
+    when "add_dividend"
+      add_dividend(*args)
     end
   end
 
@@ -44,5 +46,10 @@ class Balance
   def add_expense(investment, expense)
     money = cash.take(currency: expense.currency, value: expense.value)
     investment.invest_money(money)
+  end
+
+  def add_dividend(investment, dividend)
+    money = investment.invested_money.clone(dividend.value)
+    cash.add(money)
   end
 end
