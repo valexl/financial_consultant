@@ -152,16 +152,13 @@ class Money
   end
 
   def move_all_to_one_level
+    # what is it !? It doesn't look like domain action... 
     new_money = self.class.new(currency: currency)
     new_money.initial_value = 0
     new_money.income = initial_value
     new_money.income_of_income = income
     new_money.income_of_income_of_income = value - new_money.value
     new_money
-  end
-
-  def set_items(new_items)
-    @items = new_items
   end
 
   def initial_value

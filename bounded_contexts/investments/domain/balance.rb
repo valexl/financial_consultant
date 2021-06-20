@@ -3,7 +3,7 @@ class Balance
 
   def initialize(id: nil, cash:, investments: [])
     @id = id
-    @cash = cash || Cash.new
+    @cash = cash
     @investments = investments
   end
 
@@ -94,7 +94,8 @@ class Balance
     return investment unless cash.enough_money?(investment.price)
 
     money = cash.take(investment.price)
-
+    investment.initial_price = money
+    investment.price = money
     investment.add_costs(money)
     investment.mark_opened
     investments.push(investment)
@@ -112,9 +113,19 @@ class Balance
 
   def close_investment(investment)
     return investment unless investment.opened?
+
+    # raise 'Is money composite???'
+    # raise 'initial price is always in 0 level so you need to calculate all earnings -costs'
+
     cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
     cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
 
+    if investment.delta_price.positive?
+      cash.add(investment.delta_price)
+    else
+      cash.subtract(investment.delta_price)
+    end
+    byebug
     investment.mark_closed
     @investments -= [investment]
 

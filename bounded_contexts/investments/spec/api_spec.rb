@@ -6,9 +6,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
   let(:money_creator) { MoneyCreator.new(builder) }
   let(:balance) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(value: initial_balance_rub_value),
-      usd_money: money_creator.build_usd(value: initial_balance_usd_value),
-      eur_money: money_creator.build_eur(value: initial_balance_eur_value)
+      rub_money: money_creator.build_rub(initial_value: initial_balance_rub_value),
+      usd_money: money_creator.build_usd(initial_value: initial_balance_usd_value),
+      eur_money: money_creator.build_eur(initial_value: initial_balance_eur_value)
     )
     Balance.new(cash: cash, investments: [])
   end
@@ -398,7 +398,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     let(:investment_price) do
       money_creator.build(
         currency: "USD", 
-        value: 100000
+        initial_value: 100000
       )
     end
 

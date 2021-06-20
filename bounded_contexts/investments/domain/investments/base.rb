@@ -1,7 +1,7 @@
 module Investments
   class Base
     attr_reader :name, :initial_price, :price, :total_earnings, :total_costs, :balance, :status
-    attr_writer :status
+    attr_writer :status, :initial_price, :price
     private :balance
 
     def initialize(name:, initial_price:, balance:, total_costs: nil, total_earnings: nil, price: nil, status: nil)
@@ -153,12 +153,6 @@ module Investments
     end
 
     def close
-      price_diffrence = delta_price
-      if delta_price.positive?
-        add_earnings(price_diffrence)
-      else
-        add_costs(price_diffrence)
-      end
       @balance.notify(self, 'close_investment')
     end
 
@@ -168,19 +162,19 @@ module Investments
 
     def delta_price
       result = @price - @initial_price
-      result = result.move_all_to_one_level if result.positive?
+      # result = result.move_all_to_one_level if result.positive?
       result
     end
 
-    # https://en.wikipedia.org/wiki/Net_interest_income
-    def net_interest_income
-      total_earnings = @total_earnings.convert_to_the_same_proportion(@initial_price)
-      total_costs = @total_costs.convert_to_the_same_proportion(@initial_price)
+    # # https://en.wikipedia.org/wiki/Net_interest_income
+    # def net_interest_income
+    #   total_earnings = @total_earnings.convert_to_the_same_proportion(@initial_price)
+    #   total_costs = @total_costs.convert_to_the_same_proportion(@initial_price)
 
-      delta_earnings = total_earnings - total_costs
-      delta_earnings = delta_earnings.move_all_to_one_level if delta_earnings.positive?
+    #   delta_earnings = total_earnings - total_costs
+    #   delta_earnings = delta_earnings.move_all_to_one_level if delta_earnings.positive?
 
-      delta_price + delta_earnings
-    end
+    #   delta_price + delta_earnings
+    # end
   end
 end
