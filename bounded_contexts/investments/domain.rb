@@ -1,6 +1,7 @@
 require_relative 'domain/balance'
 require_relative 'domain/cash'
 require_relative 'domain/currency'
+require_relative 'domain/investments/price'
 require_relative 'domain/investments/base'
 require_relative 'domain/investments/apartment_investment'
 require_relative 'domain/investments/stock_investment'
