@@ -29,8 +29,8 @@ RSpec.describe "Investments costs logic" do
         investment.add_dividend(dividend)
       end
 
-      it "doesn't change amount of invested money by expense value" do
-        expect(investment.invested_money.value).to eq(price.value)
+      it "changes amount of invested money by dividend value (return some part of invested money)" do
+        expect(investment.invested_money.value).to eq(price.value - dividend.value)
       end
 
       it "increases amount of cash by dividend value" do
@@ -55,6 +55,7 @@ RSpec.describe "Investments costs logic" do
 
           it "doesn't change income values" do
             usd_money = cash.money(Currency::USD)
+            expect(usd_money.value).to eq(21600)
             expect(usd_money.initial_value).to eq(20000)
             expect(usd_money.income).to eq(1000)
             expect(usd_money.income_of_income).to eq(500)
@@ -81,9 +82,11 @@ RSpec.describe "Investments costs logic" do
 
           it "changes income values" do
             usd_money = cash.money(Currency::USD)
-            expect(usd_money.income).to eq(1000 + 9259.2592)
+            expect(usd_money.value).to eq(31600)
+            expect(usd_money.initial_value).to eq(20000)
+            expect(usd_money.income).to eq(1000 + 9259.2593)
             expect(usd_money.income_of_income).to eq(500 + 462.963)
-            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7778)
+            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7777)
           end
         end
       end      

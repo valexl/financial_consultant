@@ -49,7 +49,8 @@ class Balance
   end
 
   def add_dividend(investment, dividend)
-    money = investment.invested_money.clone(dividend.value)
+    invested_money, money = investment.invested_money.split(dividend.value)
+    investment.invested_money = invested_money
     cash.add(money)
   end
 end

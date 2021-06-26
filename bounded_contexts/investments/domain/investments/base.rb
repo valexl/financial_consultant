@@ -1,6 +1,7 @@
 module Investments
   class Base
     attr_reader :name, :price, :invested_money
+    attr_accessor :invested_money
 
     def initialize(name:, price:, balance:, invested_money: nil)
       @name = name
@@ -61,7 +62,7 @@ module Investments
     private
 
     def price_difference
-      price_value - invested_money.value
+      price.value - invested_money.value
     end
   end
 end
