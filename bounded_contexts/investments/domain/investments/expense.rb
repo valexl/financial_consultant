@@ -6,5 +6,9 @@ module Investments
       @value = value
       @currency = currency
     end
+
+    def positive?
+      value.positive?
+    end
   end
 end

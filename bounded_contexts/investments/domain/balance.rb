@@ -48,6 +48,7 @@ class Balance
   end
 
   def replenish(money)
+    return unless money.positive?
     cash.add(money)
   end
 
@@ -88,11 +89,13 @@ class Balance
   end
 
   def add_expense(investment, expense)
+    return unless expense.positive?
     money = cash.take(currency: expense.currency, value: expense.value)
     investment.invest_money(money)
   end
 
   def add_dividend(investment, dividend)
+    return unless dividend.positive?
     invested_money, money = investment.invested_money.split(dividend.value)
     investment.invested_money = invested_money
     cash.add(money)

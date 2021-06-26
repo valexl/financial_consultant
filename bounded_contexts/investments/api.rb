@@ -27,13 +27,12 @@ module FinancialConsultant
                     currency: investment.price.currency,
                     value: investment.price.value
                   },
-                  total_earnings: {
-                    currency: investment.total_earnings.currency,
-                    value: investment.total_earnings.value
-                  },
-                  total_costs: {
-                    currency: investment.total_costs.currency,
-                    value: investment.total_costs.value
+                  invested_money: {
+                    currency: investment.invested_money.currency,
+                    initial_value: investment.invested_money.initial_value,
+                    income: investment.invested_money.income,
+                    income_of_income: investment.invested_money.income_of_income,
+                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
                   }
                 } 
               end
@@ -68,13 +67,12 @@ module FinancialConsultant
                       currency: investment.price.currency,
                       value: investment.price.value
                     },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    },
-                    total_costs: {
-                      currency: investment.total_costs.currency,
-                      value: investment.total_costs.value
+                    invested_money: {
+                      currency: investment.invested_money.currency,
+                      initial_value: investment.invested_money.initial_value,
+                      income: investment.invested_money.income,
+                      income_of_income: investment.invested_money.income_of_income,
+                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
                     }
                   } 
                 end

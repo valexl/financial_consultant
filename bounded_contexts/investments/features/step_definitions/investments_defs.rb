@@ -1,18 +1,28 @@
 
 Given('opened investment prices {float} {string}') do |investment_price, currency|
   cash = Cash.new(
-    rub_money: $money_creator.build_rub(value: @rub_cash_value),
-    usd_money: $money_creator.build_usd(value: @usd_cash_value),
-    eur_money: $money_creator.build_eur(value: @eur_cash_value)
+    rub_money: $money_creator.build_rub(initial_value: @rub_cash_value),
+    usd_money: $money_creator.build_usd(initial_value: @usd_cash_value),
+    eur_money: $money_creator.build_eur(initial_value: @eur_cash_value)
   )
   balance = Balance.new(cash: cash, investments: [])
   balance.investments = []
 
-  price = $money_creator.public_send("build_#{currency.downcase}", value: investment_price)
-  balance.replenish(price)
+  money = $money_creator.public_send("build_#{currency.downcase}", initial_value: investment_price)
+  balance.replenish(money)
+
+
+  investment_creator = InvestmentCreator.new(balance)
+  @investment = investment_creator.build(
+    name: "test",
+    type: "appartment",
+    price: {
+      "currency" => currency,
+      "value" => investment_price
+    },
+  )
   
-  @investment = balance.open_apartment_investment(name: 'test', price: price)
-  balance.investments << @investment
+  @investment.open
   
   Repositories::BalanceRepository.create(balance)
 end
@@ -31,16 +41,26 @@ end
 
 Given('closed investment prices {float} {string}') do |investment_price, currency|
   cash = Cash.new(
-    rub_money: $money_creator.build_rub(value: @rub_cash_value),
-    usd_money: $money_creator.build_usd(value: @usd_cash_value),
-    eur_money: $money_creator.build_eur(value: @eur_cash_value)
+    rub_money: $money_creator.build_rub(initial_value: @rub_cash_value),
+    usd_money: $money_creator.build_usd(initial_value: @usd_cash_value),
+    eur_money: $money_creator.build_eur(initial_value: @eur_cash_value)
   )
   balance = Balance.new(cash: cash, investments: [])
   balance.investments = []
   
-  new_price = $money_creator.public_send("build_#{currency.downcase}", value: investment_price)
-  @investment = balance.open_apartment_investment(name: 'test', price: $money_creator.build_usd(value: 0))
+  investment_creator = InvestmentCreator.new(balance)
+  @investment = investment_creator.build(
+    name: "test",
+    type: "appartment",
+    price: {
+      "currency" => currency,
+      "value" => 0
+    },
+  )
+  @investment.open
   @investment.close
+
+  new_price = Investments::Price.new(currency: currency, value: investment_price)
   @investment.change_price(new_price)
   
   Repositories::BalanceRepository.create(balance)  
@@ -52,9 +72,9 @@ end
 
 When('opens this investment') do
   cash = Cash.new(
-    rub_money: $money_creator.build_rub(value: @rub_cash_value),
-    usd_money: $money_creator.build_usd(value: @usd_cash_value),
-    eur_money: $money_creator.build_eur(value: @eur_cash_value)
+    rub_money: $money_creator.build_rub(initial_value: @rub_cash_value),
+    usd_money: $money_creator.build_usd(initial_value: @usd_cash_value),
+    eur_money: $money_creator.build_eur(initial_value: @eur_cash_value)
   )
   balance = Balance.new(cash: cash, investments: [])
   Repositories::BalanceRepository.create(balance)
