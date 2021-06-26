@@ -34,6 +34,9 @@ class Balance
     money = cash.take(currency: investment.price_currency, value: investment.price_value)
     investment.invest_money(money)
     @investments.push(investment)
+    investment.mark_opened
+  rescue Money::NotEnoughMoney
+    false
   end
 
   def close_investment(investment)
@@ -41,6 +44,7 @@ class Balance
     @cash.add(investment.invested_money)
     @cash.add(investment.profit)
     @cash.subtract(investment.loss)
+    investment.mark_closed
   end
 
   def add_expense(investment, expense)

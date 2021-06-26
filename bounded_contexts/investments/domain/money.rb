@@ -145,6 +145,7 @@ class Money
   end
 
   def split(amount)
+    raise NotEnoughMoney.new if value < amount
     money = clone(amount)
     new_money = self - money
     return [new_money, money]
@@ -168,5 +169,8 @@ class Money
 
   def income_of_income_of_income_in_percent
     (income_of_income_of_income.to_f/value)
+  end
+
+  class NotEnoughMoney < Exception
   end
 end
