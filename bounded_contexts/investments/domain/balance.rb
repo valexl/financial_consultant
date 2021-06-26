@@ -97,6 +97,8 @@ class Balance
     return unless expense.positive?
     money = cash.take(currency: expense.currency, value: expense.value)
     investment.invest_money(money)
+  rescue Money::NotEnoughMoney
+    false
   end
 
   def add_dividend(investment, dividend)
