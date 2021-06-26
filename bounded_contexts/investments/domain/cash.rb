@@ -1,5 +1,5 @@
 class Cash
-  attr_reader 
+  attr_reader :rub_money, :eur_money, :usd_money
   def initialize(rub_money:, eur_money:, usd_money: )
     @rub_money = rub_money
     @eur_money = eur_money
