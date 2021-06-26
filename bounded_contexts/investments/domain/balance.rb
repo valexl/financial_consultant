@@ -11,12 +11,40 @@ class Balance
     cash.rub_money
   end
 
+  def cash_rub_money_value
+    cash_rub_money.value
+  end
+
+  def cash_rub_money_currency
+    cash_rub_money.currency
+  end
+
   def cash_eur_money
     cash.eur_money
   end
 
+  def cash_eur_money_value
+    cash_eur_money.value
+  end
+
+  def cash_eur_money_currency
+    cash_eur_money.currency
+  end
+
   def cash_usd_money
     cash.usd_money
+  end
+
+  def cash_usd_money_value
+    cash_usd_money.value
+  end
+
+  def cash_usd_money_currency
+    cash_usd_money.currency
+  end
+
+  def find_investment(name:)
+    @investments.find {|investment| investment.name == name} 
   end
 
   def replenish(money)

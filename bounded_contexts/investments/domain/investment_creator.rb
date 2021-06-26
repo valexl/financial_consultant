@@ -4,7 +4,7 @@ class InvestmentCreator
     @money_creator = MoneyCreator.new
   end
 
-  def build(type:, name:, status:, invested_money: , price:)
+  def build(type:, name:, price:, status: nil, invested_money: nil)
     klass = type == "apartment" ? Investments::ApartmentInvestment : Investments::StockInvestment
 
     klass.new(
@@ -12,29 +12,35 @@ class InvestmentCreator
       price: build_price(currency: price["currency"], value: price["value"]),
       balance: @balance,
       status: status,
-      invested_money: build_invested_money(
-        currency: invested_money["currency"],
-        initial_value: invested_money["initial_value"],
-        income: invested_money["income"],
-        income_of_income: invested_money["income_of_income"],
-        income_of_income_of_income: invested_money["income_of_income_of_income"],
-      )
+      invested_money: build_invested_money(invested_money)
+        
     )
   end
 
   private
+
+  def klass(type)
+    return Investments::ApartmentInvestment if type == "apartment"
+    return Investments::StockInvestment if type == "stock"
+    raise UnsupportedInvestmentTypeError.new
+  end
   
   def build_price(currency:, value:)
-    Investments::Price.new(currency: currency, value: value)
+    Investments::Price.new(currency: currency, value: value.to_f)
   end
 
-  def build_invested_money(currency:, initial_value:, income:, income_of_income:, income_of_income_of_income:)
+  def build_invested_money(invested_money_attribute)
+    return nil if invested_money_attribute.nil?
+
     @money_creator.build(
-      currency: currency, 
-      initial_value: initial_value, 
-      income: income, 
-      income_of_income: income_of_income, 
-      income_of_income_of_income: income_of_income_of_income
+      currency: invested_money_attribute["currency"],
+      initial_value: invested_money_attribute["initial_value"],
+      income: invested_money_attribute["income"],
+      income_of_income: invested_money_attribute["income_of_income"],
+      income_of_income_of_income: invested_money_attribute["income_of_income_of_income"],
     )
+  end
+
+  class UnsupportedInvestmentTypeError < Exception
   end
 end

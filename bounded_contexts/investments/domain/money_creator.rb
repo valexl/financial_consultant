@@ -2,10 +2,10 @@ class MoneyCreator
   def build(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0, currency:)
     Money.new(
       currency: currency,
-      initial_value: initial_value,
-      income: income,
-      income_of_income: income_of_income,
-      income_of_income_of_income: income_of_income_of_income,
+      initial_value: initial_value.to_f,
+      income: income.to_f,
+      income_of_income: income_of_income.to_f,
+      income_of_income_of_income: income_of_income_of_income.to_f,
     )
   end
 

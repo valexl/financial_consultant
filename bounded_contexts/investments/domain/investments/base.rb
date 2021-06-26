@@ -4,12 +4,12 @@ module Investments
     attr_reader :name, :price, :status 
     attr_accessor :invested_money
 
-    def initialize(name:, price:, balance:, status: "pending", invested_money: nil)
+    def initialize(name:, price:, balance:, status: nil, invested_money: nil)
       @name = name
       @price = price
       @balance = balance
       @invested_money = invested_money || Money.new(currency: price_currency)
-      @status = status
+      @status = status || "pending"
     end
 
     def type
