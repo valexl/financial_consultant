@@ -1,6 +1,7 @@
 module Investments
   class Base
-    attr_reader :name, :price, :invested_money
+    TYPE = "Generic"
+    attr_reader :name, :price, :status 
     attr_accessor :invested_money
 
     def initialize(name:, price:, balance:, status: "pending", invested_money: nil)
@@ -9,6 +10,10 @@ module Investments
       @balance = balance
       @invested_money = invested_money || Money.new(currency: price_currency)
       @status = status
+    end
+
+    def type
+      self.class::TYPE
     end
 
     def pending?

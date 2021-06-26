@@ -7,6 +7,18 @@ class Balance
     @investments = investments
   end
 
+  def cash_rub_money
+    cash.rub_money
+  end
+
+  def cash_eur_money
+    cash.eur_money
+  end
+
+  def cash_usd_money
+    cash.usd_money
+  end
+
   def replenish(money)
     cash.add(money)
   end
