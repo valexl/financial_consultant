@@ -2,13 +2,12 @@ require 'spec_helper'
 
 RSpec.describe FinancialConsultant::Investments::API, roda: :app do
   let(:headers) { { "ACCEPT" => "application/json" } }
-  let(:builder)  { MoneyBuilder.new }
-  let(:money_creator) { MoneyCreator.new(builder) }
+  let(:money_creator) { MoneyCreator.new }
   let(:balance) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(value: initial_balance_rub_value),
-      usd_money: money_creator.build_usd(value: initial_balance_usd_value),
-      eur_money: money_creator.build_eur(value: initial_balance_eur_value)
+      rub_money: money_creator.build_rub(initial_value: initial_balance_rub_value),
+      usd_money: money_creator.build_usd(initial_value: initial_balance_usd_value),
+      eur_money: money_creator.build_eur(initial_value: initial_balance_eur_value)
     )
     Balance.new(cash: cash, investments: [])
   end
@@ -81,9 +80,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     it "increases USD cach value on balance" do
       expect {
         post_repleninsh_balance.call
-      }.to change { Repositories::BalanceRepository.fetch.usd_cash_only_value }
-      .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
-      .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+      }.to change { Repositories::BalanceRepository.fetch.cash_usd_money_value }
+      .and avoid_changing { Repositories::BalanceRepository.fetch.cash_rub_money_value }
+      .and avoid_changing { Repositories::BalanceRepository.fetch.cash_eur_money_value }
     end
   end
 
@@ -125,13 +124,12 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "currency" => "USD",
               "value" => 1000
             },
-            "total_earnings" => {
+            "invested_money" => {
               "currency" => "USD",
-              "value" => 0
-            },
-            "total_costs" => {
-              "currency" => "USD",
-              "value" => 0
+              "initial_value" => 1000,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
@@ -146,9 +144,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         expect {
           post_open_investment.call
         }.to change { Repositories::BalanceRepository.fetch.investments.count }
-        .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
-        .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
-        .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+        .and avoid_changing { Repositories::BalanceRepository.fetch.cash_rub_money_value }
+        .and change { Repositories::BalanceRepository.fetch.cash_usd_money_value }.from(3000).to(2000)
+        .and avoid_changing { Repositories::BalanceRepository.fetch.cash_eur_money_value }
       end
     end
     
@@ -165,13 +163,12 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "currency" => "USD",
               "value" => 1000
             },
-            "total_earnings" => {
+            "invested_money" => {
               "currency" => "USD",
-              "value" => 0
-            },
-            "total_costs" => {
-              "currency" => "USD",
-              "value" => 0
+              "initial_value" => 1000,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
@@ -186,9 +183,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         expect {
           post_open_investment.call
         }.to change { Repositories::BalanceRepository.fetch.investments.count }
-        .and avoid_changing { Repositories::BalanceRepository.fetch.rub_cash_only_value }
-        .and change { Repositories::BalanceRepository.fetch.usd_cash_only_value }.from(3000).to(2000)
-        .and avoid_changing { Repositories::BalanceRepository.fetch.eur_cash_only_value }
+        .and avoid_changing { Repositories::BalanceRepository.fetch.cash_rub_money_value }
+        .and change { Repositories::BalanceRepository.fetch.cash_usd_money_value }.from(3000).to(2000)
+        .and avoid_changing { Repositories::BalanceRepository.fetch.cash_eur_money_value }
       end
     end
   end
@@ -209,7 +206,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     end
     let(:investment_name) { "test_investment" }
     let(:investment_price) do
-      money_creator.build(
+      Investments::Price.new(
         currency: "USD", 
         value: 1000
       )
@@ -227,23 +224,19 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "currency" => "USD",
               "value" => 1000
             },
-            "total_earnings" => {
+            "invested_money" => {
               "currency" => "USD",
-              "value" => 0
-            },
-            "total_costs" => {
-              "currency" => "USD",
-              "value" => 0
+              "initial_value" => 1000,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
       end
 
       before do
-        balance.open_apartment_investment(
-            name: investment_name, 
-            price: investment_price
-          )
+        open_apartment_investment(balance, investment_name, investment_price)
         Repositories::BalanceRepository.save(balance)
       end
 
@@ -264,23 +257,19 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
               "currency" => "USD",
               "value" => 1000
             },
-            "total_earnings" => {
+            "invested_money" => {
               "currency" => "USD",
-              "value" => 0
-            },
-            "total_costs" => {
-              "currency" => "USD",
-              "value" => 0
+              "initial_value" => 1000,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
       end
 
       before do
-        balance.open_stock_investment(
-            name: investment_name, 
-            price: investment_price
-          )
+        open_stock_investment(balance, investment_name, investment_price)
         Repositories::BalanceRepository.save(balance)
       end
 
@@ -291,18 +280,18 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     end
   end
 
-  describe 'POST /investments/earnings.json' do
-    let(:receive_investment_earnings) do
-      Proc.new {  post '/investments/earnings', params.merge(headers: headers) }
+  describe 'POST /investments/dividend.json' do
+    let(:receive_investment_dividend) do
+      Proc.new {  post '/investments/dividend', params.merge(headers: headers) }
     end
     let(:params) do
       {
         investment: {
           name: investment_name
         },
-        earnings: {
-          currency: earnings_currency,
-          value: earnings_value
+        dividend: {
+          currency: dividend_currency,
+          value: dividend_value
         }
       }
     end
@@ -310,10 +299,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     let(:initial_balance_usd_value) { 100000 }
     let(:initial_balance_eur_value) { 0 }
     let(:investment_name) { "test_investment" }
-    let(:earnings_currency) { "USD"}
-    let(:earnings_value) { 1000 }
+    let(:dividend_currency) { "USD"}
+    let(:dividend_value) { 1000 }
     let(:investment_price) do
-      money_creator.build(
+      Investments::Price.new(
         currency: "USD", 
         value: 100000
       )
@@ -326,31 +315,27 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "name"=>investment_name,
             "status" => "opened",
             "price" => {
-              "currency" => earnings_currency,
+              "currency" => dividend_currency,
               "value" => 100000
             },
-            "total_earnings" => {
-              "currency" => earnings_currency,
-              "value" => earnings_value
-            },
-            "total_costs" => {
+            "invested_money" => {
               "currency" => "USD",
-              "value" => 0
+              "initial_value" => initial_balance_usd_value - dividend_value,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
       end    
 
     before do
-      balance.open_apartment_investment(
-          name: investment_name, 
-          price: investment_price
-        )
+      open_apartment_investment(balance, investment_name, investment_price)
       Repositories::BalanceRepository.save(balance)
     end
 
     it "returns expected response" do
-      receive_investment_earnings.call
+      receive_investment_dividend.call
       expect(response_body).to eq(expected_response)
     end
 
@@ -368,24 +353,24 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
       end
 
       it "returns expected response" do
-        receive_investment_earnings.call
+        receive_investment_dividend.call
         expect(response_body).to eq(expected_response)
       end
     end
   end
 
-  describe 'POST /investments/costs.json' do
-    let(:receive_investment_costs) do
-      Proc.new {  post '/investments/costs', params.merge(headers: headers) }
+  describe 'POST /investments/expense.json' do
+    let(:receive_investment_expense) do
+      Proc.new {  post '/investments/expense', params.merge(headers: headers) }
     end
     let(:params) do
       {
         investment: {
           name: investment_name
         },
-        costs: {
-          currency: costs_currency,
-          value: costs_value
+        expense: {
+          currency: expense_currency,
+          value: expense_value
         }
       }
     end
@@ -393,10 +378,10 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     let(:initial_balance_usd_value) { 110000 }
     let(:initial_balance_eur_value) { 0 }
     let(:investment_name) { "test_investment" }
-    let(:costs_currency) { "USD"}
-    let(:costs_value) { 1000 }
+    let(:expense_currency) { "USD"}
+    let(:expense_value) { 1000 }
     let(:investment_price) do
-      money_creator.build(
+      Investments::Price.new(
         currency: "USD", 
         value: 100000
       )
@@ -409,31 +394,27 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             "name"=>investment_name,
             "status" => "opened",
             "price" => {
-              "currency" => costs_currency,
+              "currency" => expense_currency,
               "value" => 100000
             },
-            "total_earnings" => {
-              "currency" => costs_currency,
-              "value" => 0
-            },
-            "total_costs" => {
-              "currency" => costs_currency,
-              "value" => costs_value
+            "invested_money" => {
+              "currency" => "USD",
+              "initial_value" => investment_price.value + expense_value,
+              "income" => 0,
+              "income_of_income" => 0,
+              "income_of_income_of_income" => 0,
             }
           },
         }
       end    
 
     before do
-      balance.open_apartment_investment(
-          name: investment_name, 
-          price: investment_price
-        )
+      open_apartment_investment(balance, investment_name, investment_price)
       Repositories::BalanceRepository.save(balance)
     end
 
     it "returns expected response" do
-      receive_investment_costs.call
+      receive_investment_expense.call
       expect(response_body).to eq(expected_response)
     end
 
@@ -451,7 +432,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
       end
 
       it "returns expected response" do
-        receive_investment_costs.call
+        receive_investment_expense.call
         expect(response_body).to eq(expected_response)
       end
     end
@@ -459,5 +440,21 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
 
   def response_body
     JSON.parse(last_response.body)
+  end
+
+  def open_apartment_investment(balance, investment_name, investment_price)
+    Investments::ApartmentInvestment.new(
+      balance: balance,
+      name: investment_name,
+      price: investment_price
+    ).open
+  end
+
+  def open_stock_investment(balance, investment_name, investment_price)
+    Investments::StockInvestment.new(
+      balance: balance,
+      name: investment_name,
+      price: investment_price
+    ).open
   end
 end

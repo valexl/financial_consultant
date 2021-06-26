@@ -9,9 +9,9 @@ module FinancialConsultant
             balance = Repositories::BalanceRepository.fetch
             { 
               cash: {
-                rub: balance.rub_cash_only_value,
-                usd: balance.usd_cash_only_value,
-                eur: balance.eur_cash_only_value
+                rub: balance.cash_rub_money_value,
+                usd: balance.cash_usd_money_value,
+                eur: balance.cash_eur_money_value
               },
               total_equity: {
                 rub: balance.total_equity(Currency::RUB),
@@ -27,13 +27,12 @@ module FinancialConsultant
                     currency: investment.price.currency,
                     value: investment.price.value
                   },
-                  total_earnings: {
-                    currency: investment.total_earnings.currency,
-                    value: investment.total_earnings.value
-                  },
-                  total_costs: {
-                    currency: investment.total_costs.currency,
-                    value: investment.total_costs.value
+                  invested_money: {
+                    currency: investment.invested_money.currency,
+                    initial_value: investment.invested_money.initial_value,
+                    income: investment.invested_money.income,
+                    income_of_income: investment.invested_money.income_of_income,
+                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
                   }
                 } 
               end
@@ -43,16 +42,16 @@ module FinancialConsultant
           r.on 'replenish' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              money_creator = MoneyCreator.new(MoneyBuilder.new)
-              money = money_creator.build(currency: r.params.dig("money", "currency"), value: r.params.dig("money", "value"))
+              money_creator = MoneyCreator.new
+              money = money_creator.build(currency: r.params.dig("money", "currency"), initial_value: r.params.dig("money", "value"))
               balance.replenish(money)
 
               Repositories::BalanceRepository.save(balance)
               { 
                 cash: {
-                  rub: balance.rub_cash_only_value,
-                  usd: balance.usd_cash_only_value,
-                  eur: balance.eur_cash_only_value
+                  rub: balance.cash_rub_money_value,
+                  usd: balance.cash_usd_money_value,
+                  eur: balance.cash_eur_money_value
                 },
                 total_equity: {
                   rub: balance.total_equity(Currency::RUB),
@@ -68,13 +67,12 @@ module FinancialConsultant
                       currency: investment.price.currency,
                       value: investment.price.value
                     },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    },
-                    total_costs: {
-                      currency: investment.total_costs.currency,
-                      value: investment.total_costs.value
+                    invested_money: {
+                      currency: investment.invested_money.currency,
+                      initial_value: investment.invested_money.initial_value,
+                      income: investment.invested_money.income,
+                      income_of_income: investment.invested_money.income_of_income,
+                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
                     }
                   } 
                 end
@@ -87,26 +85,15 @@ module FinancialConsultant
           r.on 'open' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              money_creator = MoneyCreator.new(MoneyBuilder.new)
-
-              money = money_creator.build(
-                currency: r.params.dig("investment", "price", "currency"), 
-                value: r.params.dig("investment", "price", "value").to_f
+              
+              investment_creator = InvestmentCreator.new(balance)
+              investment = investment_creator.build(
+                name: r.params.dig("investment", "name"),
+                type: r.params.dig("investment", "type"),
+                price: r.params.dig("investment", "price"),
               )
 
-              investment = if r.params.dig("investment", "type") == "apartment"
-                balance.open_apartment_investment(
-                  name: r.params.dig("investment", "name"), 
-                  price: money
-                )
-              elsif r.params.dig("investment", "type") == "stock"
-                balance.open_stock_investment(
-                  name: r.params.dig("investment", "name"), 
-                  price: money
-                )
-              else
-                raise 'Unsupported type'
-              end
+              investment.open
 
               Repositories::BalanceRepository.save(balance)
               { 
@@ -118,13 +105,12 @@ module FinancialConsultant
                     currency: investment.price.currency,
                     value: investment.price.value
                   },
-                  total_earnings: {
-                    currency: investment.total_earnings.currency,
-                    value: investment.total_earnings.value
-                  },
-                  total_costs: {
-                    currency: investment.total_costs.currency,
-                    value: investment.total_costs.value
+                  invested_money: {
+                    currency: investment.invested_money.currency,
+                    initial_value: investment.invested_money.initial_value,
+                    income: investment.invested_money.income,
+                    income_of_income: investment.invested_money.income_of_income,
+                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
                   }                  
                 },
               }
@@ -134,6 +120,7 @@ module FinancialConsultant
           r.on 'close' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
+
               if investment = balance.find_investment(name: r.params.dig("investment", "name"))
                 investment.close
                 Repositories::BalanceRepository.save(balance)
@@ -147,14 +134,13 @@ module FinancialConsultant
                       currency: investment.price.currency,
                       value: investment.price.value
                     },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    },
-                    total_costs: {
-                      currency: investment.total_costs.currency,
-                      value: investment.total_costs.value
-                    }
+                    invested_money: {
+                      currency: investment.invested_money.currency,
+                      initial_value: investment.invested_money.initial_value,
+                      income: investment.invested_money.income,
+                      income_of_income: investment.invested_money.income_of_income,
+                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
+                    }                  
                   },
                 }
               else
@@ -165,13 +151,13 @@ module FinancialConsultant
             end
           end
 
-          r.on 'earnings' do
+          r.on 'dividend' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
               if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                money_creator = MoneyCreator.new(MoneyBuilder.new)
-                earnings = money_creator.build(currency: r.params.dig("earnings", "currency"), value: r.params.dig("earnings", "value"))
-                investment.receive_earnings(earnings)
+                money_creator = MoneyCreator.new
+                dividend = ::Investments::Dividend.new(currency: r.params.dig("dividend", "currency"), value: r.params.dig("dividend", "value").to_f)
+                investment.add_dividend(dividend)
                 Repositories::BalanceRepository.save(balance)
                 { 
                   investment: {
@@ -182,14 +168,13 @@ module FinancialConsultant
                       currency: investment.price.currency,
                       value: investment.price.value
                     },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    },
-                    total_costs: {
-                      currency: investment.total_costs.currency,
-                      value: investment.total_costs.value
-                    }
+                    invested_money: {
+                      currency: investment.invested_money.currency,
+                      initial_value: investment.invested_money.initial_value,
+                      income: investment.invested_money.income,
+                      income_of_income: investment.invested_money.income_of_income,
+                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
+                    }              
                   },
                 }
               else
@@ -200,13 +185,12 @@ module FinancialConsultant
             end
           end
 
-          r.on 'costs' do
+          r.on 'expense' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
               if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                money_creator = MoneyCreator.new(MoneyBuilder.new)
-                costs = money_creator.build(currency: r.params.dig("costs", "currency"), value: r.params.dig("costs", "value"))
-                investment.reimburse_costs(costs)
+                expense = ::Investments::Expense.new(currency: r.params.dig("expense", "currency"), value: r.params.dig("expense", "value").to_f)
+                investment.add_expense(expense)
                 Repositories::BalanceRepository.save(balance)
                 { 
                   investment: {
@@ -217,14 +201,13 @@ module FinancialConsultant
                       currency: investment.price.currency,
                       value: investment.price.value
                     },
-                    total_earnings: {
-                      currency: investment.total_earnings.currency,
-                      value: investment.total_earnings.value
-                    },
-                    total_costs: {
-                      currency: investment.total_costs.currency,
-                      value: investment.total_costs.value
-                    }
+                    invested_money: {
+                      currency: investment.invested_money.currency,
+                      initial_value: investment.invested_money.initial_value,
+                      income: investment.invested_money.income,
+                      income_of_income: investment.invested_money.income_of_income,
+                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
+                    }              
                   },
                 }
               else

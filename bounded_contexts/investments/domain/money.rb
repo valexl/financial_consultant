@@ -1,44 +1,102 @@
 class Money
   attr_accessor :currency
-  attr_reader :items
-
-  def initialize(currency: nil, items: nil)
+  attr_reader :items, :initial_value, :income, :income_of_income, :income_of_income_of_income
+  
+  def initialize(currency:, initial_value: 0, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     @currency = currency
-    @items = items
-    @items ||= [
-      Item.new(value: 0, level: 1),
-      Item.new(value: 0, level: 2),
-      Item.new(value: 0, level: 3),
-      Item.new(value: 0, level: 4)
-    ]
+    @initial_value = initial_value
+    @income = income
+    @income_of_income = income_of_income
+    @income_of_income_of_income = income_of_income_of_income
   end
 
   def to_s
     value.to_s
   end
 
-  def +(other)
-    return self if other.currency != currency
-
-    result = []
-    items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value + other.items[level].value, level: level)
-    end
-    new_money = self.class.new(currency: currency)
-    new_money.set_items(result)
-    new_money
+  def +(money)
+    return self if money.currency != currency
+    self.class.new(
+      currency: currency,
+      initial_value: (initial_value + money.initial_value).round(4),
+      income: (income + money.income).round(4),
+      income_of_income: (income_of_income + money.income_of_income).round(4),
+      income_of_income_of_income: (income_of_income_of_income + money.income_of_income_of_income).round(4),
+    )
   end
 
-  def -(other)
-    return self if other.currency != currency
+  def -(money)
+    return self if money.currency != currency
+    # Do we really need that? Why can't we just allow negative values as anyway it won't affect value
+    subtrahend_items = [
+      money.initial_value,
+      money.income,
+      money.income_of_income,
+      money.income_of_income_of_income
+    ]
+    result = [
+      initial_value,
+      income,
+      income_of_income,
+      income_of_income_of_income
+    ]
 
-    result = []
-    items_iterator.each_with_level do |item1, level|
-      result << Item.new(value: item1.value - other.items[level].value, level: level)
+    value_from_previous_level = 0
+    (0..3).reverse_each do |level|
+      diff = result[level] - (subtrahend_items[level] + value_from_previous_level)
+      if diff >= 0
+        result[level] = diff
+        (level..3).each do |index|
+          subtrahend_items[index] = 0
+        end
+        value_from_previous_level = 0
+      else
+        result[level] = 0
+        subtrahend_items[level] = - diff 
+        value_from_previous_level = - diff
+      end
     end
-    new_money = self.class.new(currency: currency)
-    new_money.set_items(result)
-    new_money
+    subtrahend_items.each_with_index do |item, level|
+      next if item.zero?
+      level_was_covered = false
+      result.each_with_index do |result_item, result_level|
+        next if result_item.zero?
+        next if level_was_covered
+        if result_item >= item
+          result[result_level] = result_item - item
+          level_was_covered = true
+        else
+          item = item - result_item
+          result[result_level] = 0
+        end
+      end
+    end  
+
+    result = result.map do |item|
+      item.round(4)
+    end  
+
+    self.class.new(
+      currency: currency,
+      initial_value: result[0].round(4),
+      income: result[1].round(4),
+      income_of_income: result[2].round(4),
+      income_of_income_of_income: result[3].round(4),
+    )
+  end  
+
+  def exchange(new_currency)
+    self.class.new(
+      currency: new_currency,
+      initial_value: Currency.exchange(initial_value, currency, new_currency),
+      income: Currency.exchange(income, currency, new_currency),
+      income_of_income: Currency.exchange(income_of_income, currency, new_currency),
+      income_of_income_of_income: Currency.exchange(income_of_income_of_income, currency, new_currency),
+    )
+  end
+
+  def positive?
+    value.positive?
   end
 
   def >=(other)
@@ -53,143 +111,78 @@ class Money
     value < other.value
   end
 
-  def positive?
-    value.positive?
-  end
-
-  def exchange(new_currency)
-    result = []
-    items_iterator.each_with_level do |item, level|
-      new_value = Currency.exchange(item.value, currency, new_currency)
-      result << Item.new(value: new_value, level: level)
-    end
-    money = self.class.new
-    money.currency = new_currency
-    money.set_items(result)
-    money
-  end
-
   def add(money)
-    return self if money.currency != currency
-    return self unless money.positive?
-
-    result = []
-    items_iterator.each_with_level do |item, level|
-      result << Item.new(value: item.value + money.items[level].value, level: level)
-    end
-    @items = result
+    self + money
   end
 
   def subtract(money)
-    return self if money.currency != currency
-    return self unless money.positive?
-    return self if self < money
-
-    result = []
-    items_iterator.each_with_level do |item, level|
-      result << Item.new(value: item.value - money.items[level].value, level: level)
-    end
-    @items = result
+    self - money
   end
 
-  def withdrawable
-    money = self.class.new
-    money.currency = currency
-    money.income_of_income_of_income = withdrawable_items_iterator.sum { |item| item.value }
-    money
+  def clone(amount)
+    given_income_of_income_of_income = (amount * income_of_income_of_income_in_percent).round(4)
+    given_income_of_income = (amount * income_of_income_in_percent).round(4)
+    given_income = (amount * income_in_percent).round(4)
+    given_initial_value = (amount - (given_income + given_income_of_income + given_income_of_income_of_income)).round(4)
+
+    money = self.class.new(
+      currency: currency,
+      initial_value: given_initial_value,
+      income: given_income,
+      income_of_income: given_income_of_income,
+      income_of_income_of_income: given_income_of_income_of_income,
+    )
   end
 
-  def convert_to_the_same_proportion(money)
-    new_money = self.class.new(currency: currency)
-    new_money.income_of_income_of_income = value * money.income_of_income_of_income_in_percent
-    new_money.income_of_income = value * money.income_of_income_in_percent
-    new_money.income = value * money.income_in_percent
-    new_money.initial_value = value - new_money.income_of_income_of_income - new_money.income_of_income - new_money.income
-    new_money
+  def lock_in_profits
+    self.class.new(
+      currency: currency,
+      initial_value: 0,
+      income: initial_value,
+      income_of_income: income,
+      income_of_income_of_income: income_of_income + income_of_income_of_income
+    )
   end
 
-  def move_all_to_one_level
-    new_money = self.class.new(currency: currency)
-    new_money.initial_value = 0
-    new_money.income = initial_value
-    new_money.income_of_income = income
-    new_money.income_of_income_of_income = value - new_money.value
-    new_money
+  def split(amount)
+    raise NotEnoughMoney.new if value < amount
+    money = clone(amount)
+    new_money = self - money
+    return [new_money, money]
   end
 
-  def set_items(new_items)
-    @items = new_items
-  end
-
-  def initial_value
-    @items[0].value
-  end
-
-  def initial_value=(value)
-    @items[0].value = value
-  end
-
-  def income=(value)
-    @items[1].value = value
-  end
-
-  def income
-    @items[1].value
-  end
-
-  def income_of_income=(value)
-    @items[2].value = value
-  end
-
-  def income_of_income
-    @items[2].value
-  end
-
-  def income_of_income_of_income=(value)
-    @items[3].value = value
-  end
-
-  def income_of_income_of_income
-    @items[3].value
+  def take_income_of_income_of_income
+    money = self.class.new(
+      currency: currency,
+      initial_value: 0,
+      income: 0,
+      income_of_income: 0,
+      income_of_income_of_income: income_of_income_of_income
+    )
+    new_money = self - money
+    return [new_money, money]
   end
 
   def value
-    items.map(&:value).sum
+    (initial_value + income + income_of_income + income_of_income_of_income).round(4)
   end
 
   def initial_value_in_percent
-    (initial_value.to_f / value)
+    (initial_value.to_f/value)
   end
 
   def income_in_percent
-    (income.to_f / value)
+    (income.to_f/value)
   end
 
   def income_of_income_in_percent
-    (income_of_income.to_f / value)
+    (income_of_income.to_f/value)
   end
 
   def income_of_income_of_income_in_percent
-    (income_of_income_of_income.to_f / value)
+    (income_of_income_of_income.to_f/value)
   end
 
-  private
-
-  def items_iterator
-    ItemsIterator.new(@items)
-  end
-
-  def withdrawable_items_iterator
-    WithdrawableItemsIterator.new(@items)
-  end
-
-  class Item
-    attr_accessor :value
-    attr_reader :level
-
-    def initialize(value:, level:)
-      @value = value
-      @level = level
-    end
+  class NotEnoughMoney < Exception
   end
 end

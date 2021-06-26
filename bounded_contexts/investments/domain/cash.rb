@@ -1,62 +1,71 @@
 class Cash
-  def initialize(rub_money:, eur_money:, usd_money:)
+  attr_reader :rub_money, :eur_money, :usd_money
+  def initialize(rub_money:, eur_money:, usd_money: )
     @rub_money = rub_money
     @eur_money = eur_money
     @usd_money = usd_money
   end
 
   def value(currency)
-    availabile_monies.sum { |availabile_money| availabile_money.exchange(currency).value }
-  end
-
-  def rub_only_value
-    @rub_money.value
-  end
-
-  def eur_only_value
-    @eur_money.value
-  end
-
-  def usd_only_value
-    @usd_money.value
+    @rub_money.exchange(currency).value + @eur_money.exchange(currency).value + @usd_money.exchange(currency).value
   end
 
   def add(money)
-    return if money.nil?
-
-    availabile_monies.each { |availabile_money| availabile_money.add(money) }
+    @rub_money = @rub_money + money
+    @eur_money = @eur_money + money
+    @usd_money = @usd_money + money
   end
 
   def subtract(money)
-    return if money.nil?
-
-    availabile_monies.each { |availabile_money| availabile_money.subtract(money) }
+    @rub_money = @rub_money - money
+    @eur_money = @eur_money - money
+    @usd_money = @usd_money - money
   end
 
-  def withdrawable_money_rub
-    @rub_money.withdrawable
-  end
-
-  def withdrawable_money_usd
-    @usd_money.withdrawable
-  end
-
-  def withdrawable_money_eur
-    @eur_money.withdrawable
-  end
-
-  def enough_money?(money)
-    availabile_monies.any? { |availabile_money| availabile_money >= money }
-  end
-
-  private
-
-  def availabile_monies
-    [
-      @rub_money,
-      @eur_money,
+  def money(currency)
+    case currency
+    when @rub_money.currency
+      @rub_money
+    when @eur_money.currency
+      @eur_money
+    when @usd_money.currency
       @usd_money
-    ]
+    else
+      raise 'Unsupported currency'
+    end
+  end
+
+  def take(value:, currency:)
+    case currency
+    when @rub_money.currency
+      new_money, taken_money = @rub_money.split(value)
+      @rub_money = new_money
+    when @eur_money.currency
+      new_money, taken_money = @eur_money.split(value)
+      @eur_money = new_money
+    when @usd_money.currency
+      new_money, taken_money = @usd_money.split(value)
+      @usd_money = new_money
+    else
+      raise 'Unsupported currency'
+    end
+    taken_money
+  end
+
+  def take_withdrawable_money(currency)
+    case currency
+    when @rub_money.currency
+      new_money, taken_money = @rub_money.take_income_of_income_of_income
+      @rub_money = new_money
+    when @eur_money.currency
+      new_money, taken_money = @eur_money.take_income_of_income_of_income
+      @eur_money = new_money
+    when @usd_money.currency
+      new_money, taken_money = @usd_money.take_income_of_income_of_income
+      @usd_money = new_money
+    else
+      raise 'Unsupported currency'
+    end
+    taken_money
   end
 end
-

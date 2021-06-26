@@ -1,46 +1,39 @@
 class MoneyCreator
-  attr_accessor :builder
-
-  def initialize(builder)
-    @builder = builder
+  def build(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0, currency:)
+    Money.new(
+      currency: currency,
+      initial_value: initial_value.to_f,
+      income: income.to_f,
+      income_of_income: income_of_income.to_f,
+      income_of_income_of_income: income_of_income_of_income.to_f,
+    )
   end
 
-  def build(value:, currency:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
-    builder.value = value.to_f
-    builder.currency = currency
-    builder.income = income.to_f
-    builder.income_of_income = income_of_income.to_f
-    builder.income_of_income_of_income = income_of_income_of_income.to_f
-    result = builder.money_object
-    builder.reset
-    result
-  end
-
-  def build_rub(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
+  def build_rub(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value,
-      income: income,
-      income_of_income: income_of_income,
+      initial_value: initial_value, 
+      income: income, 
+      income_of_income: income_of_income, 
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::RUB
     )
   end
 
-  def build_usd(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
+  def build_usd(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value,
-      income: income,
-      income_of_income: income_of_income,
+      initial_value: initial_value, 
+      income: income, 
+      income_of_income: income_of_income, 
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::USD
     )
   end
 
-  def build_eur(value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
+  def build_eur(initial_value:, income: 0, income_of_income: 0, income_of_income_of_income: 0)
     build(
-      value: value,
-      income: income,
-      income_of_income: income_of_income,
+      initial_value: initial_value, 
+      income: income, 
+      income_of_income: income_of_income, 
       income_of_income_of_income: income_of_income_of_income,
       currency: Currency::EUR
     )

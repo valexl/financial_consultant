@@ -3,106 +3,108 @@ class Balance
 
   def initialize(id: nil, cash:, investments: [])
     @id = id
-    @cash = cash || Cash.new
+    @cash = cash
     @investments = investments
   end
 
-  def open_apartment_investment(name:, price:)
-    apartment_investment = Investments::ApartmentInvestment.new(name: name, initial_price: price, balance: self)
-    apartment_investment.open
-    apartment_investment
+  def cash_rub_money
+    cash.rub_money
   end
 
-  def open_stock_investment(name:, price:)
-    stock_investment = Investments::StockInvestment.new(name: name, initial_price: price, balance: self)
-    stock_investment.open
-    stock_investment
+  def cash_rub_money_value
+    cash_rub_money.value
   end
+
+  def cash_rub_money_currency
+    cash_rub_money.currency
+  end
+
+  def cash_eur_money
+    cash.eur_money
+  end
+
+  def cash_eur_money_value
+    cash_eur_money.value
+  end
+
+  def cash_eur_money_currency
+    cash_eur_money.currency
+  end
+
+  def cash_usd_money
+    cash.usd_money
+  end
+
+  def cash_usd_money_value
+    cash_usd_money.value
+  end
+
+  def cash_usd_money_currency
+    cash_usd_money.currency
+  end
+
+  def withdrawable_money(currency)
+    cash.take_withdrawable_money(currency)
+  end
+
 
   def find_investment(name:)
-    investments.find {|investment| investment.name == name}
+    @investments.find {|investment| investment.name == name} 
+  end
+
+  def replenish(money)
+    return unless money.positive?
+    cash.add(money)
   end
 
   def total_equity(currency)
     cash.value(currency) + investments.sum { |i| i.value(currency) }
   end
 
-  def replenish(money)
-    cash.add(money)
-  end
-
-  def take(money)
-    cash.subtract(money)
-  end
-
-  def notify(source, event)
+  def notify(event, *args)
     case event
-    when 'investment_opening_request'
-      open_investment(source)
-    when 'investment_earnings_receiving_request'
-      receive_earnings(source)
-    when 'investment_costs_reimbursing_request'
-      reimburse_costs(source)
-    when 'investment_closed'
-      confirm_closing_investment(source)
-    when 'profit_taken'
-      take_investment_profit(source)
+    when "open_investment"
+      open_investment(*args)
+    when "close_investment"
+      close_investment(*args)
+    when "add_expense"
+      add_expense(*args)
+    when "add_dividend"
+      add_dividend(*args)
     end
-  end
-
-  def withdrawable_money_rub
-    cash.withdrawable_money_rub
-  end
-
-  def withdrawable_money_usd
-    cash.withdrawable_money_usd
-  end
-
-  def withdrawable_money_eur
-    cash.withdrawable_money_eur
-  end
-
-  def withdraw(money)
-    cash.subtract(money)
-  end
-
-  def rub_cash_only_value
-    cash.rub_only_value
-  end
-
-  def usd_cash_only_value
-    cash.usd_only_value
-  end
-
-  def eur_cash_only_value
-    cash.eur_only_value
   end
 
   private
 
   def open_investment(investment)
-    return unless cash.enough_money?(investment.price)
-    cash.subtract(investment.price)
-    investments.push(investment)
+    money = cash.take(currency: investment.price_currency, value: investment.price_value)
+    investment.invest_money(money)
+    @investments.push(investment)
+    investment.mark_opened
+  rescue Money::NotEnoughMoney
+    false
   end
 
-  def receive_earnings(earnings)
-    cash.add(earnings)
+  def close_investment(investment)
+    @investments = @investments - [investment]
+    @cash.add(investment.invested_money)
+    @cash.add(investment.profit)
+    @cash.subtract(investment.loss)
+    investment.mark_closed
   end
 
-  def reimburse_costs(costs)
-    cash.subtract(costs)
+  def add_expense(investment, expense)
+    return unless expense.positive?
+    money = cash.take(currency: expense.currency, value: expense.value)
+    investment.invest_money(money)
+  rescue Money::NotEnoughMoney
+    false
   end
 
-  def confirm_closing_investment(investment)
-    cash.add(investment.initial_price)
-    cash.add(investment.total_costs) # we received and saved info about costs before but now we need to re-calculate it based on income levels
-    cash.subtract(investment.total_earnings) # we received and saved info about earnings before but now we need to re-calculate it based on income levels
-    cash.add(investment.net_interest_income)
-    @investments -= [investment]
-  end
-
-  def take_investment_profit(money)
+  def add_dividend(investment, dividend)
+    return unless dividend.positive?
+    invested_money, money = investment.invested_money.split(dividend.value)
+    investment.invested_money = invested_money
     cash.add(money)
   end
 end
