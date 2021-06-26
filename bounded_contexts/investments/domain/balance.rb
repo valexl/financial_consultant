@@ -43,6 +43,11 @@ class Balance
     cash_usd_money.currency
   end
 
+  def withdrawable_money(currency)
+    cash.take_withdrawable_money(currency)
+  end
+
+
   def find_investment(name:)
     @investments.find {|investment| investment.name == name} 
   end

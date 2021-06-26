@@ -11,4 +11,4 @@ Feature: Withdraw money
     * investment opening by price 120000 "RUB"
     * investment closing with 10000 "RUB" profit
     Then cash should be 130000 "RUB"
-    * 69 RUB is withdrawable
+    * 75.7576 RUB is withdrawable

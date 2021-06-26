@@ -51,4 +51,21 @@ class Cash
     end
     taken_money
   end
+
+  def take_withdrawable_money(currency)
+    case currency
+    when @rub_money.currency
+      new_money, taken_money = @rub_money.take_income_of_income_of_income
+      @rub_money = new_money
+    when @eur_money.currency
+      new_money, taken_money = @eur_money.take_income_of_income_of_income
+      @eur_money = new_money
+    when @usd_money.currency
+      new_money, taken_money = @usd_money.take_income_of_income_of_income
+      @usd_money = new_money
+    else
+      raise 'Unsupported currency'
+    end
+    taken_money
+  end
 end

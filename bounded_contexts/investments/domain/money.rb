@@ -151,6 +151,18 @@ class Money
     return [new_money, money]
   end
 
+  def take_income_of_income_of_income
+    money = self.class.new(
+      currency: currency,
+      initial_value: 0,
+      income: 0,
+      income_of_income: 0,
+      income_of_income_of_income: income_of_income_of_income
+    )
+    new_money = self - money
+    return [new_money, money]
+  end
+
   def value
     (initial_value + income + income_of_income + income_of_income_of_income).round(4)
   end
