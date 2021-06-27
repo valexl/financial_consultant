@@ -13,6 +13,7 @@ require_relative 'db'
 require_relative 'api'
 require_relative 'infrastructure'
 require_relative 'domain'
+require_relative 'application'
 
 module FinancialConsultant
   module Investments
