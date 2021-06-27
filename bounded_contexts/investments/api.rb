@@ -39,24 +39,7 @@ module FinancialConsultant
               investment.open
 
               Repositories::BalanceRepository.save(balance)
-              { 
-                investment: {
-                  type: investment.type,
-                  name: investment.name,
-                  status: investment.status,
-                  price: {
-                    currency: investment.price.currency,
-                    value: investment.price.value
-                  },
-                  invested_money: {
-                    currency: investment.invested_money.currency,
-                    initial_value: investment.invested_money.initial_value,
-                    income: investment.invested_money.income,
-                    income_of_income: investment.invested_money.income_of_income,
-                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                  }                  
-                },
-              }
+              Serializers::InvestmentSerializer.new(investment).serialize
             end
           end
 
@@ -68,24 +51,7 @@ module FinancialConsultant
                 investment.close
                 Repositories::BalanceRepository.save(balance)
 
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }                  
-                  },
-                }
+                Serializers::InvestmentSerializer.new(investment).serialize
               else
                 {
                   status: "skipped"
@@ -102,24 +68,8 @@ module FinancialConsultant
                 dividend = ::Investments::Dividend.new(currency: r.params.dig("dividend", "currency"), value: r.params.dig("dividend", "value").to_f)
                 investment.add_dividend(dividend)
                 Repositories::BalanceRepository.save(balance)
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }              
-                  },
-                }
+                
+                Serializers::InvestmentSerializer.new(investment).serialize
               else
                 {
                   status: "skipped"
@@ -135,24 +85,8 @@ module FinancialConsultant
                 expense = ::Investments::Expense.new(currency: r.params.dig("expense", "currency"), value: r.params.dig("expense", "value").to_f)
                 investment.add_expense(expense)
                 Repositories::BalanceRepository.save(balance)
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }              
-                  },
-                }
+                
+                Serializers::InvestmentSerializer.new(investment).serialize
               else
                 {
                   status: "skipped"

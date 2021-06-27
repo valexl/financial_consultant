@@ -1,1 +1,2 @@
 require_relative 'application/serializers/balance_serializer'
+require_relative 'application/serializers/investment_serializer'
