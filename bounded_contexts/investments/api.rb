@@ -13,7 +13,6 @@ module FinancialConsultant
           r.on 'replenish' do
             r.post true do
               # Q?: should we hide using repositories in the Commands?
-
               balance = Repositories::BalanceRepository.fetch 
               replenish_balance_command = Commands::ReplenishBalanceCommand.new(
                 balance: balance,
@@ -32,18 +31,18 @@ module FinancialConsultant
           r.on 'open' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              
-              investment_creator = InvestmentCreator.new(balance)
-              investment = investment_creator.build(
-                name: r.params.dig("investment", "name"),
-                type: r.params.dig("investment", "type"),
-                price: r.params.dig("investment", "price"),
+              open_investment_command = Commands::OpenInvestmentCommand.new(
+                balance: balance,
+                investment_name: r.params.dig("investment", "name"),
+                investment_type: r.params.dig("investment", "type"),
+                investment_price: r.params.dig("investment", "price"),
               )
-
-              investment.open
-
+              open_investment_command.execute
+              
               Repositories::BalanceRepository.save(balance)
-              Serializers::InvestmentSerializer.new(investment).serialize
+              Serializers::InvestmentSerializer.new(
+                balance.find_investment(name: r.params.dig("investment", "name"))
+              ).serialize
             end
           end
 
