@@ -1,2 +1,2 @@
-require_relative '../application/serializers'
-require_relative '../application/commands'
+require_relative '../layers/application/serializers'
+require_relative '../layers/application/commands'
