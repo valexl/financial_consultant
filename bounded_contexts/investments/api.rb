@@ -14,15 +14,17 @@ module FinancialConsultant
             r.post true do
               # Q?: should we hide using repositories in the Commands?
               balance = Repositories::BalanceRepository.fetch 
-              replenish_balance_command = Commands::ReplenishBalanceCommand.new(
-                balance: balance,
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::ReplenishBalanceCommand.new(
                 currency: r.params.dig("money", "currency"),
                 value: r.params.dig("money", "value")
               )
-              replenish_balance_command.execute
+              command_invoker.serializer = Serializers::BalanceSerializer
+              command_invoker.execute_command
 
               Repositories::BalanceRepository.save(balance)
-              Serializers::BalanceSerializer.new(balance).serialize
+              command_invoker.result
             end
           end
         end
@@ -31,18 +33,17 @@ module FinancialConsultant
           r.on 'open' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              open_investment_command = Commands::OpenInvestmentCommand.new(
-                balance: balance,
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::OpenInvestmentCommand.new(
                 investment_name: r.params.dig("investment", "name"),
                 investment_type: r.params.dig("investment", "type"),
                 investment_price: r.params.dig("investment", "price"),
               )
-              open_investment_command.execute
-              
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
               Repositories::BalanceRepository.save(balance)
-              Serializers::InvestmentSerializer.new(
-                balance.find_investment(name: r.params.dig("investment", "name"))
-              ).serialize
+              command_invoker.result
             end
           end
 
@@ -50,16 +51,16 @@ module FinancialConsultant
             r.post true do
               balance = Repositories::BalanceRepository.fetch
 
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                investment.close
-                Repositories::BalanceRepository.save(balance)
+              command_invoker = Commands::CommandInvoker.new(balance)
 
-                Serializers::InvestmentSerializer.new(investment).serialize
-              else
-                {
-                  status: "skipped"
-                }
-              end
+              command_invoker.command = Commands::CloseInvestmentCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+              )
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
 

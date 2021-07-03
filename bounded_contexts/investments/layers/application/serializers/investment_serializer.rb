@@ -7,22 +7,23 @@ module Serializers
     end
 
     def serialize
-      # TODO: avoid using & by adding NullInvestment object 
+      return { status: "skipped" } if investment.nil?
+      
       {
         investment: {
-          type: investment&.type,
-          name: investment&.name,
-          status: investment&.status,
+          type: investment.type,
+          name: investment.name,
+          status: investment.status,
           price: {
-            currency: investment&.price&.currency,
-            value: investment&.price&.value
+            currency: investment.price_currency,
+            value: investment.price_value
           },
           invested_money: {
-            currency: investment&.invested_money&.currency,
-            initial_value: investment&.invested_money&.initial_value,
-            income: investment&.invested_money&.income,
-            income_of_income: investment&.invested_money&.income_of_income,
-            income_of_income_of_income: investment&.invested_money&.income_of_income_of_income,
+            currency: investment.invested_money_currency,
+            initial_value: investment.invested_money_initial_value,
+            income: investment.invested_money_income,
+            income_of_income: investment.invested_money_income_of_income,
+            income_of_income_of_income: investment.invested_money_income_of_income_of_income,
           }
         } 
       }
