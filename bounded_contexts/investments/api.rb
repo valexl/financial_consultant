@@ -67,18 +67,20 @@ module FinancialConsultant
           r.on 'dividend' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                money_creator = MoneyCreator.new
-                dividend = ::Investments::Dividend.new(currency: r.params.dig("dividend", "currency"), value: r.params.dig("dividend", "value").to_f)
-                investment.add_dividend(dividend)
-                Repositories::BalanceRepository.save(balance)
-                
-                Serializers::InvestmentSerializer.new(investment).serialize
-              else
-                {
-                  status: "skipped"
-                }
-              end
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+
+              command_invoker.command = Commands::AddDividendCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+                dividend_currency: r.params.dig("dividend", "currency"),
+                dividend_value: r.params.dig("dividend", "value")
+              )
+
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
 
