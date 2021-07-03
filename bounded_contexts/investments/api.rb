@@ -12,13 +12,17 @@ module FinancialConsultant
 
           r.on 'replenish' do
             r.post true do
-              balance = Repositories::BalanceRepository.fetch
-              money_creator = MoneyCreator.new
-              money = money_creator.build(currency: r.params.dig("money", "currency"), initial_value: r.params.dig("money", "value"))
-              balance.replenish(money)
+              # Q?: should we hide using repositories in the Commands?
+
+              balance = Repositories::BalanceRepository.fetch 
+              replenish_balance_command = Commands::ReplenishBalanceCommand.new(
+                balance: balance,
+                currency: r.params.dig("money", "currency"),
+                value: r.params.dig("money", "value")
+              )
+              replenish_balance_command.execute
 
               Repositories::BalanceRepository.save(balance)
-              
               Serializers::BalanceSerializer.new(balance).serialize
             end
           end
