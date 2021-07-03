@@ -9,11 +9,8 @@ unless ENV['RACK_ENV'] == 'production'
   require 'byebug'
 end
 
-require_relative 'db'
+require_relative 'config'
 require_relative 'api'
-require_relative 'infrastructure'
-require_relative 'domain'
-require_relative 'application'
 
 module FinancialConsultant
   module Investments

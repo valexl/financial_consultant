@@ -1,0 +1,7 @@
+require_relative '../domain/balance'
+require_relative '../domain/cash'
+require_relative '../domain/currency'
+require_relative '../domain/investments'
+require_relative '../domain/investment_creator'
+require_relative '../domain/money'
+require_relative '../domain/money_creator'
