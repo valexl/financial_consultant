@@ -87,17 +87,19 @@ module FinancialConsultant
           r.on 'expense' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                expense = ::Investments::Expense.new(currency: r.params.dig("expense", "currency"), value: r.params.dig("expense", "value").to_f)
-                investment.add_expense(expense)
-                Repositories::BalanceRepository.save(balance)
-                
-                Serializers::InvestmentSerializer.new(investment).serialize
-              else
-                {
-                  status: "skipped"
-                }
-              end
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::AddExpenseCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+                expense_currency: r.params.dig("expense", "currency"),
+                expense_value: r.params.dig("expense", "value")
+              )
+
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
         end
