@@ -29,7 +29,7 @@ RSpec.describe "Investments profit logic" do
     end
     
     context "and price was doubled for this investment" do
-      let(:new_price) { Investments::Price.new(value: 20000, currency: Currency::USD) }
+      let(:new_price) { Investments::Price.new(value: 2*price.value, currency: Currency::USD) }
       
       before do
         investment.change_price(new_price)
@@ -88,5 +88,35 @@ RSpec.describe "Investments profit logic" do
       end
     end
 
+    context "and dividends covered initial price" do
+      let(:dividend) do
+        Investments::Dividend.new(value: price.value, currency: Currency::USD)
+      end
+
+      before do
+        investment.add_dividend(dividend)
+      end
+
+      it "changes a total_equity of balance by the dividend value" do
+        expect(balance.total_equity(Currency::USD)).to eq(31600)
+      end
+
+      context "and investment is closed" do
+        before do
+          investment.close
+        end
+
+        it "increases a total_equity of balance on the same value as before opening an investment" do
+          expect(balance.total_equity(Currency::USD)).to eq(31600)
+        end
+        
+        it "increases all levels of income" do
+          usd_money = cash.money(Currency::USD)
+          expect(usd_money.income).to eq(1000 + 9259.2592)
+          expect(usd_money.income_of_income).to eq(500 + 462.963)
+          expect(usd_money.income_of_income_of_income).to eq(100 + 277.7778)
+        end
+      end
+    end
   end
 end
