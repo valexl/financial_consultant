@@ -12,6 +12,10 @@ module Investments
       @status = status || "pending"
     end
 
+    def null?
+      false
+    end
+
     def type
       self.class::TYPE
     end
@@ -83,6 +87,34 @@ module Investments
 
     def close
       @balance.notify("close_investment", self)
+    end
+
+    def price_currency
+      price.currency
+    end
+
+    def price_value
+      price.value
+    end
+
+    def invested_money_currency
+      invested_money.currency
+    end
+
+    def invested_money_initial_value
+      invested_money.initial_value
+    end
+
+    def invested_money_income
+      invested_money.income
+    end
+
+    def invested_money_income_of_income
+      invested_money.income_of_income
+    end
+
+    def invested_money_income_of_income_of_income
+      invested_money.income_of_income_of_income
     end
 
     private

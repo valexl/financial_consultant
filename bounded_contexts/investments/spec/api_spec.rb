@@ -25,17 +25,19 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     end
     let(:expected_response) do
       {
-        "cash" => {
-          "rub" => 0.0,
-          "usd" => 0.0,
-          "eur" => 0.0,
-        },
-        "total_equity" => {
-          "rub" => 0.0,
-          "usd" => 0.0,
-          "eur" => 0.0,
-        },
-        "investments" => []
+        "balance" => {
+          "cash" => {
+            "rub" => 0.0,
+            "usd" => 0.0,
+            "eur" => 0.0,
+          },
+          "total_equity" => {
+            "rub" => 0.0,
+            "usd" => 0.0,
+            "eur" => 0.0,
+          },
+          "investments" => []
+        }
       }
     end
     before { get_balance.call }
@@ -58,17 +60,19 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
     end
     let(:expected_response) do
       {
-        "cash" => {
-          "rub" => 0.0,
-          "usd" => 1000.0,
-          "eur" => 0.0,
-        },
-        "total_equity" => {
-          "rub" => 75000.0,
-          "usd" => 1000.0,
-          "eur" => 800,
-        },        
-        "investments" => []
+        "balance" => {
+          "cash" => {
+            "rub" => 0.0,
+            "usd" => 1000.0,
+            "eur" => 0.0,
+          },
+          "total_equity" => {
+            "rub" => 75000.0,
+            "usd" => 1000.0,
+            "eur" => 800,
+          },        
+          "investments" => []
+        }
       }
     end
 
