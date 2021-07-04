@@ -7,76 +7,24 @@ module FinancialConsultant
         r.on 'balance' do
           r.get true do
             balance = Repositories::BalanceRepository.fetch
-            { 
-              cash: {
-                rub: balance.cash_rub_money_value,
-                usd: balance.cash_usd_money_value,
-                eur: balance.cash_eur_money_value
-              },
-              total_equity: {
-                rub: balance.total_equity(Currency::RUB),
-                usd: balance.total_equity(Currency::USD),
-                eur: balance.total_equity(Currency::EUR),
-              },
-              investments: balance.investments.map do |investment|
-                {
-                  type: investment.type,
-                  name: investment.name,
-                  status: investment.status,
-                  price: {
-                    currency: investment.price.currency,
-                    value: investment.price.value
-                  },
-                  invested_money: {
-                    currency: investment.invested_money.currency,
-                    initial_value: investment.invested_money.initial_value,
-                    income: investment.invested_money.income,
-                    income_of_income: investment.invested_money.income_of_income,
-                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                  }
-                } 
-              end
-            }
+            Serializers::BalanceSerializer.new(balance).serialize
           end
 
           r.on 'replenish' do
             r.post true do
-              balance = Repositories::BalanceRepository.fetch
-              money_creator = MoneyCreator.new
-              money = money_creator.build(currency: r.params.dig("money", "currency"), initial_value: r.params.dig("money", "value"))
-              balance.replenish(money)
+              # Q?: should we hide using repositories in the Commands?
+              balance = Repositories::BalanceRepository.fetch 
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::ReplenishBalanceCommand.new(
+                currency: r.params.dig("money", "currency"),
+                value: r.params.dig("money", "value")
+              )
+              command_invoker.serializer = Serializers::BalanceSerializer
+              command_invoker.execute_command
 
               Repositories::BalanceRepository.save(balance)
-              { 
-                cash: {
-                  rub: balance.cash_rub_money_value,
-                  usd: balance.cash_usd_money_value,
-                  eur: balance.cash_eur_money_value
-                },
-                total_equity: {
-                  rub: balance.total_equity(Currency::RUB),
-                  usd: balance.total_equity(Currency::USD),
-                  eur: balance.total_equity(Currency::EUR),
-                },
-                investments: balance.investments.map do |investment|
-                  {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }
-                  } 
-                end
-              }
+              command_invoker.result
             end
           end
         end
@@ -85,35 +33,17 @@ module FinancialConsultant
           r.on 'open' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              
-              investment_creator = InvestmentCreator.new(balance)
-              investment = investment_creator.build(
-                name: r.params.dig("investment", "name"),
-                type: r.params.dig("investment", "type"),
-                price: r.params.dig("investment", "price"),
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::OpenInvestmentCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+                investment_type: r.params.dig("investment", "type"),
+                investment_price: r.params.dig("investment", "price"),
               )
-
-              investment.open
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
 
               Repositories::BalanceRepository.save(balance)
-              { 
-                investment: {
-                  type: investment.type,
-                  name: investment.name,
-                  status: investment.status,
-                  price: {
-                    currency: investment.price.currency,
-                    value: investment.price.value
-                  },
-                  invested_money: {
-                    currency: investment.invested_money.currency,
-                    initial_value: investment.invested_money.initial_value,
-                    income: investment.invested_money.income,
-                    income_of_income: investment.invested_money.income_of_income,
-                    income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                  }                  
-                },
-              }
+              command_invoker.result
             end
           end
 
@@ -121,103 +51,57 @@ module FinancialConsultant
             r.post true do
               balance = Repositories::BalanceRepository.fetch
 
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                investment.close
-                Repositories::BalanceRepository.save(balance)
+              command_invoker = Commands::CommandInvoker.new(balance)
 
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }                  
-                  },
-                }
-              else
-                {
-                  status: "skipped"
-                }
-              end
+              command_invoker.command = Commands::CloseInvestmentCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+              )
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
 
           r.on 'dividend' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                money_creator = MoneyCreator.new
-                dividend = ::Investments::Dividend.new(currency: r.params.dig("dividend", "currency"), value: r.params.dig("dividend", "value").to_f)
-                investment.add_dividend(dividend)
-                Repositories::BalanceRepository.save(balance)
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }              
-                  },
-                }
-              else
-                {
-                  status: "skipped"
-                }
-              end
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+
+              command_invoker.command = Commands::AddDividendCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+                dividend_currency: r.params.dig("dividend", "currency"),
+                dividend_value: r.params.dig("dividend", "value")
+              )
+
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
 
           r.on 'expense' do
             r.post true do
               balance = Repositories::BalanceRepository.fetch
-              if investment = balance.find_investment(name: r.params.dig("investment", "name"))
-                expense = ::Investments::Expense.new(currency: r.params.dig("expense", "currency"), value: r.params.dig("expense", "value").to_f)
-                investment.add_expense(expense)
-                Repositories::BalanceRepository.save(balance)
-                { 
-                  investment: {
-                    type: investment.type,
-                    name: investment.name,
-                    status: investment.status,
-                    price: {
-                      currency: investment.price.currency,
-                      value: investment.price.value
-                    },
-                    invested_money: {
-                      currency: investment.invested_money.currency,
-                      initial_value: investment.invested_money.initial_value,
-                      income: investment.invested_money.income,
-                      income_of_income: investment.invested_money.income_of_income,
-                      income_of_income_of_income: investment.invested_money.income_of_income_of_income,
-                    }              
-                  },
-                }
-              else
-                {
-                  status: "skipped"
-                }
-              end
+
+              command_invoker = Commands::CommandInvoker.new(balance)
+              command_invoker.command = Commands::AddExpenseCommand.new(
+                investment_name: r.params.dig("investment", "name"),
+                expense_currency: r.params.dig("expense", "currency"),
+                expense_value: r.params.dig("expense", "value")
+              )
+
+              command_invoker.serializer = Serializers::InvestmentSerializer
+              command_invoker.execute_command
+
+              Repositories::BalanceRepository.save(balance)
+              command_invoker.result
             end
           end
-
         end
       end
     end

@@ -47,9 +47,8 @@ class Balance
     cash.take_withdrawable_money(currency)
   end
 
-
   def find_investment(name:)
-    @investments.find {|investment| investment.name == name} 
+    @investments.find { |investment| investment.name == name }
   end
 
   def replenish(money)

@@ -1,0 +1,2 @@
+require_relative 'serializers/balance_serializer'
+require_relative 'serializers/investment_serializer'

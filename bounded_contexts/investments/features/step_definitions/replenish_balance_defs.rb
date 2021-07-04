@@ -28,15 +28,15 @@ end
 
 Then('balance RUB cash should be {float}') do |value|
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("cash", "rub")).to eq(value)
+  expect(JSON.parse(response.body).dig("balance", "cash", "rub")).to eq(value)
 end
 
 Then('balance EUR cash should be {float}') do |value|
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("cash", "eur")).to eq(value)
+  expect(JSON.parse(response.body).dig("balance", "cash", "eur")).to eq(value)
 end
 
 Then('balance USD cash should be {float}') do |value|
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("cash", "usd")).to eq(value)
+  expect(JSON.parse(response.body).dig("balance", "cash", "usd")).to eq(value)
 end

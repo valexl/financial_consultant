@@ -97,20 +97,20 @@ end
 
 Then('cash should be {float} {string}') do |expected_value, currency|
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("cash", currency.downcase)).to eq(expected_value)
+  expect(JSON.parse(response.body).dig("balance", "cash", currency.downcase)).to eq(expected_value)
 end
 
 Then('new opened investment') do
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("investments").count).to eq(1)
+  expect(JSON.parse(response.body).dig("balance", "investments").count).to eq(1)
 end
 
 Then('no new investments') do
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("investments").count).to eq(0)
+  expect(JSON.parse(response.body).dig("balance", "investments").count).to eq(0)
 end
 
 Then('total equity should be {float} {string}') do |expected_value, currency|
   response = $browser.get '/api/balance'
-  expect(JSON.parse(response.body).dig("total_equity", currency.downcase)).to eq(expected_value)
+  expect(JSON.parse(response.body).dig("balance", "total_equity", currency.downcase)).to eq(expected_value)
 end

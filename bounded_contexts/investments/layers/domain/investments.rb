@@ -1,0 +1,6 @@
+require_relative 'investments/price'
+require_relative 'investments/expense'
+require_relative 'investments/dividend'
+require_relative 'investments/base'
+require_relative 'investments/apartment_investment'
+require_relative 'investments/stock_investment'
