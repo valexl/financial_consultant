@@ -1,7 +1,6 @@
 class InvestmentCreator
   def initialize(balance)
     @balance = balance
-    @money_creator = MoneyCreator.new
   end
 
   def build(type:, name:, price:, status: nil, invested_money: nil)
@@ -32,13 +31,17 @@ class InvestmentCreator
   def build_invested_money(invested_money_attribute)
     return nil if invested_money_attribute.nil?
 
-    @money_creator.build(
+    money_creator.build(
       currency: invested_money_attribute["currency"],
       initial_value: invested_money_attribute["initial_value"],
       income: invested_money_attribute["income"],
       income_of_income: invested_money_attribute["income_of_income"],
       income_of_income_of_income: invested_money_attribute["income_of_income_of_income"],
     )
+  end
+
+  def money_creator
+    MoneyCreator.new
   end
 
   class UnsupportedInvestmentTypeError < Exception
