@@ -1,13 +1,44 @@
 class Money
   attr_accessor :currency
-  attr_reader :items, :initial_value, :income, :income_of_income, :income_of_income_of_income
+  attr_reader :items, :initial_value, :income, :income_of_income, :income_of_income_of_income,
+  :value, :initial_value_in_percent, :income_in_percent, :income_of_income_in_percent, :income_of_income_of_income_in_percent
   
-  def initialize(currency:, initial_value: 0, income: 0, income_of_income: 0, income_of_income_of_income: 0)
+  def initialize(currency:, value: 0, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:)
     @currency = currency
-    @initial_value = initial_value
-    @income = income
-    @income_of_income = income_of_income
-    @income_of_income_of_income = income_of_income_of_income
+    @value = value
+    @initial_value_in_percent = initial_value_in_percent
+    @income_in_percent = income_in_percent
+    @income_of_income_in_percent = income_of_income_in_percent
+    @income_of_income_of_income_in_percent = income_of_income_of_income_in_percent
+    @initial_value = (value * initial_value_in_percent).round(4)
+    @income = (value * income_in_percent).round(4)
+    @income_of_income = (value * income_of_income_in_percent).round(4)
+    @income_of_income_of_income = (value * income_of_income_of_income_in_percent).round(4)
+  end
+
+  def self.build(currency:, initial_value:, income:, income_of_income:, income_of_income_of_income:)
+    new_value = initial_value + income + income_of_income + income_of_income_of_income
+    if new_value == 0
+      initial_value_in_percent = 0
+      income_in_percent = 0
+      income_of_income_in_percent = 0
+      income_of_income_of_income_in_percent = 0
+    else
+      initial_value_in_percent = (initial_value.to_f / new_value)
+      income_in_percent = (income.to_f / new_value)
+      income_of_income_in_percent = (income_of_income.to_f / new_value)
+      income_of_income_of_income_in_percent = (income_of_income_of_income.to_f / new_value)
+    end
+
+    self.new(
+      currency: currency,
+      value: new_value.round(4),
+      initial_value_in_percent: initial_value_in_percent,
+      income_in_percent: income_in_percent,
+      income_of_income_in_percent: income_of_income_in_percent,
+      income_of_income_of_income_in_percent: income_of_income_of_income_in_percent,
+    )
+
   end
 
   def to_s
@@ -16,12 +47,17 @@ class Money
 
   def +(money)
     return self if money.currency != currency
-    self.class.new(
+    new_value = value + money.value
+    new_initial_value = initial_value + money.initial_value
+    new_income = income + money.income
+    new_income_of_income = income_of_income + money.income_of_income
+    new_income_of_income_of_income = income_of_income_of_income + money.income_of_income_of_income
+    self.class.build(
       currency: currency,
-      initial_value: (initial_value + money.initial_value).round(4),
-      income: (income + money.income).round(4),
-      income_of_income: (income_of_income + money.income_of_income).round(4),
-      income_of_income_of_income: (income_of_income_of_income + money.income_of_income_of_income).round(4),
+      initial_value: initial_value + money.initial_value,
+      income: income + money.income,
+      income_of_income: income_of_income + money.income_of_income,
+      income_of_income_of_income: income_of_income_of_income + money.income_of_income_of_income
     )
   end
 
@@ -76,7 +112,7 @@ class Money
       item.round(4)
     end  
 
-    self.class.new(
+    self.class.build(
       currency: currency,
       initial_value: result[0].round(4),
       income: result[1].round(4),
@@ -86,7 +122,7 @@ class Money
   end  
 
   def exchange(new_currency)
-    self.class.new(
+    self.class.build(
       currency: new_currency,
       initial_value: Currency.exchange(initial_value, currency, new_currency),
       income: Currency.exchange(income, currency, new_currency),
@@ -127,20 +163,22 @@ class Money
 
     money = self.class.new(
       currency: currency,
-      initial_value: given_initial_value,
-      income: given_income,
-      income_of_income: given_income_of_income,
-      income_of_income_of_income: given_income_of_income_of_income,
+      value: amount,
+      initial_value_in_percent: initial_value_in_percent,
+      income_in_percent: income_in_percent,
+      income_of_income_in_percent: income_of_income_in_percent,
+      income_of_income_of_income_in_percent: income_of_income_of_income_in_percent
     )
   end
 
   def lock_in_profits
     self.class.new(
       currency: currency,
-      initial_value: 0,
-      income: initial_value,
-      income_of_income: income,
-      income_of_income_of_income: income_of_income + income_of_income_of_income
+      value: value,
+      initial_value_in_percent: 0,
+      income_in_percent: initial_value_in_percent,
+      income_of_income_in_percent: income_in_percent,
+      income_of_income_of_income_in_percent: income_of_income_in_percent + income_of_income_of_income_in_percent
     )
   end
 
@@ -154,33 +192,14 @@ class Money
   def take_income_of_income_of_income
     money = self.class.new(
       currency: currency,
-      initial_value: 0,
-      income: 0,
-      income_of_income: 0,
-      income_of_income_of_income: income_of_income_of_income
+      value: income_of_income_of_income,
+      initial_value_in_percent: 0,
+      income_in_percent: 0,
+      income_of_income_in_percent: 0,
+      income_of_income_of_income_in_percent: 100
     )
     new_money = self - money
     return [new_money, money]
-  end
-
-  def value
-    (initial_value + income + income_of_income + income_of_income_of_income).round(4)
-  end
-
-  def initial_value_in_percent
-    (initial_value.to_f/value)
-  end
-
-  def income_in_percent
-    (income.to_f/value)
-  end
-
-  def income_of_income_in_percent
-    (income_of_income.to_f/value)
-  end
-
-  def income_of_income_of_income_in_percent
-    (income_of_income_of_income.to_f/value)
   end
 
   class NotEnoughMoney < Exception
