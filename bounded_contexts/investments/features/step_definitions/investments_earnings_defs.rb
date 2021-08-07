@@ -1,8 +1,8 @@
 Given('closed investment') do
   cash = Cash.new(
-    rub_money: $money_creator.build_rub(initial_value: @rub_cash_value),
-    usd_money: $money_creator.build_usd(initial_value: @usd_cash_value),
-    eur_money: $money_creator.build_eur(initial_value: @eur_cash_value)
+    rub_money: $money_creator.build_rub(value: @rub_cash_value),
+    usd_money: $money_creator.build_usd(value: @usd_cash_value),
+    eur_money: $money_creator.build_eur(value: @eur_cash_value)
   )
   balance = Balance.new(cash: cash, investments: [])
   balance.investments = []

@@ -1,8 +1,8 @@
 Before('@WithdrawMoney') do
   cash = Cash.new(
-    rub_money: $money_creator.build_rub(initial_value: 100_000),
-    usd_money: $money_creator.build_usd(initial_value: 100_000),
-    eur_money: $money_creator.build_eur(initial_value: 100_000)
+    rub_money: $money_creator.build_rub(value: 100_000),
+    usd_money: $money_creator.build_usd(value: 100_000),
+    eur_money: $money_creator.build_eur(value: 100_000)
   )
   balance = Balance.new(cash: cash, investments: [])
   balance.investments = []
