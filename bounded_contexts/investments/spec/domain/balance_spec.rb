@@ -4,9 +4,9 @@ RSpec.describe Balance do
   let(:balance) { described_class.new(cash: cash) }
   let(:cash) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(initial_value: rub_value),
-      usd_money: money_creator.build_usd(initial_value: usd_value),
-      eur_money: money_creator.build_eur(initial_value: eur_value)
+      rub_money: money_creator.build_rub(value: rub_value),
+      usd_money: money_creator.build_usd(value: usd_value),
+      eur_money: money_creator.build_eur(value: eur_value)
     )
   end
   let(:money_creator) { MoneyCreator.new }
@@ -18,7 +18,7 @@ RSpec.describe Balance do
     subject(:replenish) { balance.replenish(money)}
 
     let(:money) do
-      money_creator.build(currency: Currency::USD, initial_value: 1000)
+      money_creator.build(currency: Currency::USD, value: 1000)
     end
 
     it "increases cash value for the same as in money currency" do
