@@ -1,5 +1,5 @@
 class MoneyCreator
-  def build(value:, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:, currency:)
+  def build(value:, initial_value_in_percent: 1, income_in_percent: 0, income_of_income_in_percent: 0, income_of_income_of_income_in_percent: 0, currency:)
     Money.new(
       currency: currency,
       value: value.to_f,
@@ -10,7 +10,7 @@ class MoneyCreator
     )
   end
 
-  def build_rub(value:, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:)
+  def build_rub(value:, initial_value_in_percent: 1, income_in_percent: 0, income_of_income_in_percent: 0, income_of_income_of_income_in_percent: 0)
     build(
       value: value, 
       initial_value_in_percent: initial_value_in_percent,
@@ -21,7 +21,7 @@ class MoneyCreator
     )
   end
 
-  def build_usd(value:, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:)
+  def build_usd(value:, initial_value_in_percent: 1, income_in_percent: 0, income_of_income_in_percent: 0, income_of_income_of_income_in_percent: 0)
     build(
       value: value, 
       initial_value_in_percent: initial_value_in_percent,
@@ -32,7 +32,7 @@ class MoneyCreator
     )
   end
 
-  def build_eur(value:, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:)
+  def build_eur(value:, initial_value_in_percent: 1, income_in_percent: 0, income_of_income_in_percent: 0, income_of_income_of_income_in_percent: 0)
     build(
       value: value, 
       initial_value_in_percent: initial_value_in_percent,
