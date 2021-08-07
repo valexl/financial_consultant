@@ -4,9 +4,9 @@ RSpec.describe Repositories::BalanceRepository do
   let(:money_creator) { MoneyCreator.new }
   let(:balance) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(initial_value: 0),
-      usd_money: money_creator.build_usd(initial_value: 0),
-      eur_money: money_creator.build_eur(initial_value: 0)
+      rub_money: money_creator.build_rub(value: 0),
+      usd_money: money_creator.build_usd(value: 0),
+      eur_money: money_creator.build_eur(value: 0)
     )
     Balance.new(cash: cash, investments: [])
   end
@@ -35,9 +35,9 @@ RSpec.describe Repositories::BalanceRepository do
 
     let(:new_cash) do
       cash = Cash.new(
-        rub_money: money_creator.build_rub(initial_value: 100),
-        usd_money: money_creator.build_usd(initial_value: 1000),
-        eur_money: money_creator.build_eur(initial_value: 10000)
+        rub_money: money_creator.build_rub(value: 100),
+        usd_money: money_creator.build_usd(value: 1000),
+        eur_money: money_creator.build_eur(value: 10000)
       )
     end
     let(:investments) do
@@ -67,11 +67,47 @@ RSpec.describe Repositories::BalanceRepository do
     context "several children income" do
       let(:new_cash) do
         cash = Cash.new(
-          rub_money: money_creator.build_rub(initial_value: 100, income: 10, income_of_income: 1, income_of_income_of_income: 0.1),
-          usd_money: money_creator.build_usd(initial_value: 1000, income: 100, income_of_income: 10, income_of_income_of_income: 1),
-          eur_money: money_creator.build_eur(initial_value: 10000, income: 1000, income_of_income: 100, income_of_income_of_income: 10)
+          rub_money: money_creator.build_rub(
+            value: rub_value, 
+            initial_value_in_percent: rub_initial_value.to_f/rub_value, 
+            income_in_percent: rub_income.to_f/rub_value, 
+            income_of_income_in_percent: rub_income_of_income.to_f/rub_value, 
+            income_of_income_of_income_in_percent: rub_income_of_income_of_income.to_f/rub_value
+          ),
+          usd_money: money_creator.build_usd(
+            value: usd_value, 
+            initial_value_in_percent: usd_initial_value.to_f/usd_value, 
+            income_in_percent: usd_income.to_f/usd_value, 
+            income_of_income_in_percent: usd_income_of_income.to_f/usd_value, 
+            income_of_income_of_income_in_percent: usd_income_of_income_of_income.to_f/usd_value
+          ),
+          eur_money: money_creator.build_eur(
+            value: eur_value, 
+            initial_value_in_percent: eur_initial_value.to_f/eur_value, 
+            income_in_percent: eur_income.to_f/eur_value, 
+            income_of_income_in_percent: eur_income_of_income.to_f/eur_value, 
+            income_of_income_of_income_in_percent: eur_income_of_income_of_income.to_f/eur_value
+
+          )
         )
       end
+      let(:rub_value) { rub_initial_value + rub_income + rub_income_of_income + rub_income_of_income_of_income}
+      let(:rub_initial_value) { 100 }
+      let(:rub_income) { 10 }
+      let(:rub_income_of_income) { 1 }
+      let(:rub_income_of_income_of_income) { 0.1 }
+
+      let(:usd_value) { usd_initial_value + usd_income + usd_income_of_income + usd_income_of_income_of_income}
+      let(:usd_initial_value) { 1000 }
+      let(:usd_income) { 100 }
+      let(:usd_income_of_income) { 10 }
+      let(:usd_income_of_income_of_income) { 1 }
+
+      let(:eur_value) { eur_initial_value + eur_income + eur_income_of_income + eur_income_of_income_of_income}
+      let(:eur_initial_value) { 10000 }
+      let(:eur_income) { 1000 }
+      let(:eur_income_of_income) { 100 }
+      let(:eur_income_of_income_of_income) { 10 }
 
       it "saves changes in db" do
         expect {
