@@ -10,10 +10,10 @@ class Money
     @income_in_percent = income_in_percent
     @income_of_income_in_percent = income_of_income_in_percent
     @income_of_income_of_income_in_percent = income_of_income_of_income_in_percent
-    @initial_value = (value * initial_value_in_percent).round(4)
-    @income = (value * income_in_percent).round(4)
-    @income_of_income = (value * income_of_income_in_percent).round(4)
-    @income_of_income_of_income = (value * income_of_income_of_income_in_percent).round(4)
+    @initial_value = (value * initial_value_in_percent).round(4).to_f
+    @income = (value * income_in_percent).round(4).to_f
+    @income_of_income = (value * income_of_income_in_percent).round(4).to_f
+    @income_of_income_of_income = (value * income_of_income_of_income_in_percent).round(4).to_f
   end
 
   def self.build(currency:, initial_value:, income:, income_of_income:, income_of_income_of_income:)
@@ -28,7 +28,7 @@ class Money
       income_in_percent = (income.to_f / new_value)
       income_of_income_in_percent = (income_of_income.to_f / new_value)
       income_of_income_of_income_in_percent = (income_of_income_of_income.to_f / new_value)
-    end
+    end  
 
     self.new(
       currency: currency,
@@ -37,9 +37,8 @@ class Money
       income_in_percent: income_in_percent,
       income_of_income_in_percent: income_of_income_in_percent,
       income_of_income_of_income_in_percent: income_of_income_of_income_in_percent,
-    )
-
-  end
+    )    
+  end  
 
   def to_s
     value.to_s
@@ -47,77 +46,37 @@ class Money
 
   def +(money)
     return self if money.currency != currency
+
     new_value = value + money.value
-    new_initial_value = initial_value + money.initial_value
-    new_income = income + money.income
-    new_income_of_income = income_of_income + money.income_of_income
-    new_income_of_income_of_income = income_of_income_of_income + money.income_of_income_of_income
-    self.class.build(
+    rate_a = value/new_value
+    rate_b = money.value/new_value
+
+    new_initial_value_in_percent = initial_value_in_percent * rate_a + money.initial_value_in_percent * rate_b
+    new_income_in_percent = income_in_percent * rate_a + money.income_in_percent * rate_b
+    new_income_of_income_in_percent = income_of_income_in_percent * rate_a + money.income_of_income_in_percent * rate_b
+    new_income_of_income_of_income_in_percent = income_of_income_of_income_in_percent * rate_a + money.income_of_income_of_income_in_percent * rate_b
+
+    self.class.new(
       currency: currency,
-      initial_value: initial_value + money.initial_value,
-      income: income + money.income,
-      income_of_income: income_of_income + money.income_of_income,
-      income_of_income_of_income: income_of_income_of_income + money.income_of_income_of_income
+      value: new_value,
+      initial_value_in_percent: new_initial_value_in_percent,
+      income_in_percent: new_income_in_percent,
+      income_of_income_in_percent: new_income_of_income_in_percent,
+      income_of_income_of_income_in_percent: new_income_of_income_of_income_in_percent,
     )
   end
 
   def -(money)
     return self if money.currency != currency
-    # Do we really need that? Why can't we just allow negative values as anyway it won't affect value
-    subtrahend_items = [
-      money.initial_value,
-      money.income,
-      money.income_of_income,
-      money.income_of_income_of_income
-    ]
-    result = [
-      initial_value,
-      income,
-      income_of_income,
-      income_of_income_of_income
-    ]
+    result = Subtract.new(self, money).call
 
-    value_from_previous_level = 0
-    (0..3).reverse_each do |level|
-      diff = result[level] - (subtrahend_items[level] + value_from_previous_level)
-      if diff >= 0
-        result[level] = diff
-        (level..3).each do |index|
-          subtrahend_items[index] = 0
-        end
-        value_from_previous_level = 0
-      else
-        result[level] = 0
-        subtrahend_items[level] = - diff 
-        value_from_previous_level = - diff
-      end
-    end
-    subtrahend_items.each_with_index do |item, level|
-      next if item.zero?
-      level_was_covered = false
-      result.each_with_index do |result_item, result_level|
-        next if result_item.zero?
-        next if level_was_covered
-        if result_item >= item
-          result[result_level] = result_item - item
-          level_was_covered = true
-        else
-          item = item - result_item
-          result[result_level] = 0
-        end
-      end
-    end  
-
-    result = result.map do |item|
-      item.round(4)
-    end  
-
-    self.class.build(
+    self.class.new(
       currency: currency,
-      initial_value: result[0].round(4),
-      income: result[1].round(4),
-      income_of_income: result[2].round(4),
-      income_of_income_of_income: result[3].round(4),
+      value: result.value,
+      initial_value_in_percent: result.initial_value_in_percent,
+      income_in_percent: result.income_in_percent,
+      income_of_income_in_percent: result.income_of_income_in_percent,
+      income_of_income_of_income_in_percent: result.income_of_income_of_income_in_percent,
     )
   end  
 
@@ -200,6 +159,83 @@ class Money
     )
     new_money = self - money
     return [new_money, money]
+  end
+
+  class Subtract
+    def initialize(money_a, money_b)
+      @value = money_a.value - money_b.value
+      if @value == 0
+        rate_a = 1
+        rate_b = 1
+      else
+        rate_a = money_a.value/@value
+        rate_b = money_b.value/@value
+      end
+
+      @minuend = [
+        money_a.income_of_income_of_income_in_percent * rate_a,
+        money_a.income_of_income_in_percent * rate_a,
+        money_a.income_in_percent * rate_a,
+        money_a.initial_value_in_percent * rate_a,
+      ]
+      @subtrahend = [
+        money_b.income_of_income_of_income_in_percent * rate_b,
+        money_b.income_of_income_in_percent * rate_b,
+        money_b.income_in_percent * rate_b,
+        money_b.initial_value_in_percent * rate_b,
+      ]
+
+      @result = [0, 0, 0, 0]
+    end
+
+    def call
+      @result.each_with_index do |item, index|
+        item = @minuend[index] - @subtrahend[index]
+        if item < 0
+          taken_value = take_value_from_previous_result(item.abs, index)
+          item = - (item.abs - taken_value)
+        end
+        @result[index] = item
+      end
+
+      (1..@result.count-1).each do |index|
+        diff = @result[index -1]
+        if diff < 0
+          @result[index -1] = 0 
+          @result[index] = @result[index] - diff.abs
+        end
+      end
+
+      Result.new(@value, @result)
+    end
+
+    private
+
+    def take_value_from_previous_result(required_value, position)
+      allocated_value = 0
+      (0..position-1).reverse_each do |index|
+        if (diff = @result[index] - required_value ) >= 0
+          allocated_value = required_value
+          @result[index] = diff
+          break # collect all required value
+        else
+          allocated_value += required_value - diff.abs
+          @result[index] = 0
+        end
+      end
+      allocated_value
+    end
+  end
+
+  class Result
+    attr_reader :value, :initial_value_in_percent, :income_in_percent, :income_of_income_in_percent, :income_of_income_of_income_in_percent
+    def initialize(value, result)
+      @value = value
+      @initial_value_in_percent = result[3]
+      @income_in_percent = result[2]
+      @income_of_income_in_percent = result[1]
+      @income_of_income_of_income_in_percent = result[0]
+    end
   end
 
   class NotEnoughMoney < Exception

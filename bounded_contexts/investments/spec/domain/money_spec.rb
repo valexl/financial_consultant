@@ -46,7 +46,7 @@ RSpec.describe Money do
     end
     let(:another_currency) { Currency::USD }
     let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
-    let(:another_initial_value) { 1000 }
+    let(:another_initial_value) { 2000 }
     let(:another_income) { 100 }
     let(:another_income_of_income) { 10 }
     let(:another_income_of_income_of_income) { 1 }
@@ -60,7 +60,7 @@ RSpec.describe Money do
 
     it "increases items per level" do
       new_money = add
-      expect(new_money.initial_value).to eq(2000)
+      expect(new_money.initial_value).to eq(3000)
       expect(new_money.income).to eq(200)
       expect(new_money.income_of_income).to eq(20)
       expect(new_money.income_of_income_of_income).to eq(2)
@@ -137,7 +137,7 @@ RSpec.describe Money do
         end
       end
 
-      context "and total value of subtrahend is less the same as minuend" do
+      context "and total value of subtrahend is less than minuend" do
         context "#1" do
           let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
           let(:another_initial_value) { 900 }
@@ -209,10 +209,10 @@ RSpec.describe Money do
 
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.initial_value).to eq(210)
+            expect(new_money.initial_value).to eq(211)
             expect(new_money.income).to eq(0)
             expect(new_money.income_of_income).to eq(0)
-            expect(new_money.income_of_income_of_income).to eq(1)
+            expect(new_money.income_of_income_of_income).to eq(0)
           end
         end
   
