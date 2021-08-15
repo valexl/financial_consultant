@@ -95,9 +95,9 @@ RSpec.describe "Investments costs logic" do
             usd_money = cash.money(Currency::USD)
             expect(usd_money.value.round).to eq(31600)
             expect(usd_money.initial_value.round).to eq(20000)
-            expect(usd_money.income).to eq(1000 + 9259.2589)
+            expect(usd_money.income).to eq(1000 + 9259.2593)
             expect(usd_money.income_of_income).to eq(500 + 462.963)
-            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7779)
+            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7778)
           end
         end
       end      
