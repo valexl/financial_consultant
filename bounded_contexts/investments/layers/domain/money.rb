@@ -145,6 +145,7 @@ class Money
   def split(amount)
     raise NotEnoughMoney.new if value < amount
     money = clone(amount)
+    $ttt = true if amount == value
     new_money = self - money
     return [new_money, money]
   end
@@ -206,6 +207,8 @@ class Money
           @result[index] = @result[index] - diff.abs
         end
       end
+
+      @result = @minuend.clone if @result.sum == 0 # that means value and percentage is equal and we just need to use original one
 
       Result.new(@value, @result)
     end
