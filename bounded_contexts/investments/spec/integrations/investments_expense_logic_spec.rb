@@ -96,7 +96,7 @@ RSpec.describe "Investments costs logic" do
             expect(usd_money.initial_value).to eq(20000)
             expect(usd_money.income).to eq(1000 + 9259.2593)
             expect(usd_money.income_of_income).to eq(500 + 462.963)
-            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7777)
+            expect(usd_money.income_of_income_of_income).to eq(100 + 277.7778)
           end
         end
       end      

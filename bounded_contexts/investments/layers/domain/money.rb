@@ -5,7 +5,7 @@ class Money
   
   def initialize(currency:, value: 0, initial_value_in_percent:, income_in_percent:, income_of_income_in_percent:, income_of_income_of_income_in_percent:)
     @currency = currency
-    @value = value
+    @value = value.to_f
     @initial_value_in_percent = initial_value_in_percent
     @income_in_percent = income_in_percent
     @income_of_income_in_percent = income_of_income_in_percent
@@ -68,6 +68,7 @@ class Money
 
   def -(money)
     return self if money.currency != currency
+    return self if money.value == 0
     result = Subtract.new(self, money).call
 
     self.class.new(
