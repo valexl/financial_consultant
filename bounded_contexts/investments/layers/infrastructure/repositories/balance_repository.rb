@@ -3,22 +3,25 @@ module Repositories
     def self.create(balance)
       cash = {
         "rub" =>  {
-          "initial_value" => balance.cash_rub_money.initial_value,
-          "income" => balance.cash_rub_money.income,
-          "income_of_income" => balance.cash_rub_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_rub_money.income_of_income_of_income,
+          "value" => balance.cash_rub_money.value,
+          "initial_value_in_percent" => balance.cash_rub_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_rub_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_rub_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_rub_money.income_of_income_of_income_in_percent,
         },
         "usd" =>  {
-          "initial_value" => balance.cash_usd_money.initial_value,
-          "income" => balance.cash_usd_money.income,
-          "income_of_income" => balance.cash_usd_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_usd_money.income_of_income_of_income,
+          "value" => balance.cash_usd_money.value,
+          "initial_value_in_percent" => balance.cash_usd_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_usd_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_usd_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_usd_money.income_of_income_of_income_in_percent,
         },
         "eur" =>  {
-          "initial_value" => balance.cash_eur_money.initial_value,
-          "income" => balance.cash_eur_money.income,
-          "income_of_income" => balance.cash_eur_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_eur_money.income_of_income_of_income,
+          "value" => balance.cash_eur_money.value,
+          "initial_value_in_percent" => balance.cash_eur_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_eur_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_eur_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_eur_money.income_of_income_of_income_in_percent,
         },
       }      
       investments = balance.investments.map do |investment|
@@ -41,9 +44,27 @@ module Repositories
       money_creator = MoneyCreator.new
 
       cash = Cash.new(
-        rub_money: money_creator.build_rub(initial_value: cash_data.dig("rub", "initial_value").to_f, income: cash_data.dig("rub", "income"), income_of_income: cash_data.dig("rub", "income_of_income"), income_of_income_of_income: cash_data.dig("rub", "income_of_income_of_income")),
-        usd_money: money_creator.build_usd(initial_value: cash_data.dig("usd", "initial_value").to_f, income: cash_data.dig("usd", "income"), income_of_income: cash_data.dig("usd", "income_of_income"), income_of_income_of_income: cash_data.dig("usd", "income_of_income_of_income")),
-        eur_money: money_creator.build_eur(initial_value: cash_data.dig("eur", "initial_value").to_f, income: cash_data.dig("eur", "income"), income_of_income: cash_data.dig("eur", "income_of_income"), income_of_income_of_income: cash_data.dig("eur", "income_of_income_of_income"))
+        rub_money: money_creator.build_rub(
+          value: cash_data.dig("rub", "value").to_f, 
+          initial_value_in_percent: cash_data.dig("rub", "initial_value_in_percent").to_f, 
+          income_in_percent: cash_data.dig("rub", "income_in_percent"), 
+          income_of_income_in_percent: cash_data.dig("rub", "income_of_income_in_percent"), 
+          income_of_income_of_income_in_percent: cash_data.dig("rub", "income_of_income_of_income_in_percent")
+        ),
+        usd_money: money_creator.build_usd(
+          value: cash_data.dig("usd", "value").to_f, 
+          initial_value_in_percent: cash_data.dig("usd", "initial_value_in_percent").to_f, 
+          income_in_percent: cash_data.dig("usd", "income_in_percent"), 
+          income_of_income_in_percent: cash_data.dig("usd", "income_of_income_in_percent"), 
+          income_of_income_of_income_in_percent: cash_data.dig("usd", "income_of_income_of_income_in_percent")
+        ),
+        eur_money: money_creator.build_eur(
+          value: cash_data.dig("eur", "value").to_f, 
+          initial_value_in_percent: cash_data.dig("eur", "initial_value_in_percent").to_f, 
+          income_in_percent: cash_data.dig("eur", "income_in_percent"), 
+          income_of_income_in_percent: cash_data.dig("eur", "income_of_income_in_percent"), 
+          income_of_income_of_income_in_percent: cash_data.dig("eur", "income_of_income_of_income_in_percent")
+        )
       )
 
       balance = Balance.new(id: balace_record.id, cash: cash)
@@ -63,22 +84,25 @@ module Repositories
     def self.save(balance)
       cash = {
         "rub" =>  {
-          "initial_value" => balance.cash_rub_money.initial_value,
-          "income" => balance.cash_rub_money.income,
-          "income_of_income" => balance.cash_rub_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_rub_money.income_of_income_of_income,
+          "value" => balance.cash_rub_money.value,
+          "initial_value_in_percent" => balance.cash_rub_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_rub_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_rub_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_rub_money.income_of_income_of_income_in_percent,
         },
         "usd" =>  {
-          "initial_value" => balance.cash_usd_money.initial_value,
-          "income" => balance.cash_usd_money.income,
-          "income_of_income" => balance.cash_usd_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_usd_money.income_of_income_of_income,
+          "value" => balance.cash_usd_money.value,
+          "initial_value_in_percent" => balance.cash_usd_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_usd_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_usd_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_usd_money.income_of_income_of_income_in_percent,
         },
         "eur" =>  {
-          "initial_value" => balance.cash_eur_money.initial_value,
-          "income" => balance.cash_eur_money.income,
-          "income_of_income" => balance.cash_eur_money.income_of_income,
-          "income_of_income_of_income" => balance.cash_eur_money.income_of_income_of_income,
+          "value" => balance.cash_eur_money.value,
+          "initial_value_in_percent" => balance.cash_eur_money.initial_value_in_percent,
+          "income_in_percent" => balance.cash_eur_money.income_in_percent,
+          "income_of_income_in_percent" => balance.cash_eur_money.income_of_income_in_percent,
+          "income_of_income_of_income_in_percent" => balance.cash_eur_money.income_of_income_of_income_in_percent,
         },
       }
       investments = balance.investments.map do |investment|
@@ -100,10 +124,11 @@ module Repositories
           },
           "invested_money" => {
             "currency" => investment.invested_money.currency,
-            "initial_value" => investment.invested_money.initial_value,
-            "income" => investment.invested_money.income,
-            "income_of_income" => investment.invested_money.income_of_income,
-            "income_of_income_of_income" => investment.invested_money.income_of_income_of_income,
+            "value" => investment.invested_money.value,
+            "initial_value_in_percent" => investment.invested_money.initial_value_in_percent,
+            "income_in_percent" => investment.invested_money.income_in_percent,
+            "income_of_income_in_percent" => investment.invested_money.income_of_income_in_percent,
+            "income_of_income_of_income_in_percent" => investment.invested_money.income_of_income_of_income_in_percent,
           }
         }
     end

@@ -3,7 +3,7 @@ module Commands
 
     def initialize(currency:, value:)
       money_creator = MoneyCreator.new
-      @money = money_creator.build(currency: currency, initial_value: value)
+      @money = money_creator.build(currency: currency, value: value)
     end
 
     def execute(balance)

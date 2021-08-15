@@ -4,26 +4,30 @@ RSpec.describe Money do
   let(:money) do 
     money_creator.build(
       currency: currency, 
-      initial_value: initial_value, 
-      income: income, 
-      income_of_income: income_of_income, 
-      income_of_income_of_income: income_of_income_of_income
+      value: value,
+      initial_value_in_percent: initial_value_in_percent, 
+      income_in_percent: income_in_percent, 
+      income_of_income_in_percent: income_of_income_in_percent, 
+      income_of_income_of_income_in_percent: income_of_income_of_income_in_percent
     )
   end
   let(:money_creator) do
     MoneyCreator.new
   end
   let(:currency) { Currency::USD }
+  let(:value) { initial_value + income + income_of_income + income_of_income_of_income }
   let(:initial_value) { 1000 }
   let(:income) { 100 }
   let(:income_of_income) { 10 }
   let(:income_of_income_of_income) { 1 }
+  let(:initial_value_in_percent) { initial_value.to_f / value }
+  let(:income_in_percent) { income.to_f / value }
+  let(:income_of_income_in_percent) { income_of_income.to_f / value }
+  let(:income_of_income_of_income_in_percent) { income_of_income_of_income.to_f / value }
 
   describe "#value" do
-    subject(:value) { money.value }
-
     it "returns sum of all items" do
-      expect(value).to eq(initial_value + income + income_of_income + income_of_income_of_income)
+      expect(money.value ).to eq(value)
     end
   end
 
@@ -33,23 +37,30 @@ RSpec.describe Money do
     let(:another_money) do
       money_creator.build(
         currency: another_currency, 
-        initial_value: another_initial_value, 
-        income: another_income, 
-        income_of_income: another_income_of_income, 
-        income_of_income_of_income: another_income_of_income_of_income
+        value: another_value, 
+        initial_value_in_percent: another_initial_value_in_percent,
+        income_in_percent: another_income_in_percent, 
+        income_of_income_in_percent: another_income_of_income_in_percent, 
+        income_of_income_of_income_in_percent: another_income_of_income_of_income_in_percent
       )
     end
     let(:another_currency) { Currency::USD }
-    let(:another_initial_value) { 1000 }
+    let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
+    let(:another_initial_value) { 2000 }
     let(:another_income) { 100 }
     let(:another_income_of_income) { 10 }
     let(:another_income_of_income_of_income) { 1 }
+    let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value}
+    let(:another_income_in_percent) { another_income.to_f / another_value }
+    let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+    let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
     it {  expect(add).to be_a(Money) }
 
     it "increases items per level" do
       new_money = add
-      expect(new_money.initial_value).to eq(2000)
+      expect(new_money.initial_value).to eq(3000)
       expect(new_money.income).to eq(200)
       expect(new_money.income_of_income).to eq(20)
       expect(new_money.income_of_income_of_income).to eq(2)
@@ -68,17 +79,24 @@ RSpec.describe Money do
     let(:another_money) do
       money_creator.build(
         currency: another_currency, 
-        initial_value: another_initial_value, 
-        income: another_income, 
-        income_of_income: another_income_of_income, 
-        income_of_income_of_income: another_income_of_income_of_income
+        value: another_value, 
+        initial_value_in_percent: another_initial_value_in_percent,
+        income_in_percent: another_income_in_percent, 
+        income_of_income_in_percent: another_income_of_income_in_percent, 
+        income_of_income_of_income_in_percent: another_income_of_income_of_income_in_percent
       )
     end
     let(:another_currency) { Currency::USD }
+    let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
     let(:another_initial_value) { 1000 }
     let(:another_income) { 100 }
     let(:another_income_of_income) { 10 }
     let(:another_income_of_income_of_income) { 1 }
+    let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value}
+    let(:another_income_in_percent) { another_income.to_f / another_value }
+    let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+    let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
     it {  expect(subtract).to be_a(Money) }
 
@@ -98,10 +116,16 @@ RSpec.describe Money do
 
     context "when another money doesn't have any income and has only initial value" do
       context "and total value of subtrahend is exact the same as minuend" do
+        let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
         let(:another_initial_value) { 1111 }
         let(:another_income) { 0 }
         let(:another_income_of_income) { 0 }
         let(:another_income_of_income_of_income) { 0 }
+        let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value }
+        let(:another_income_in_percent) { another_income.to_f / another_value }
+        let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+        let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
         it "takes missed money from the incomes" do
           new_money = subtract
@@ -113,12 +137,18 @@ RSpec.describe Money do
         end
       end
 
-      context "and total value of subtrahend is less the same as minuend" do
+      context "and total value of subtrahend is less than minuend" do
         context "#1" do
+          let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
           let(:another_initial_value) { 900 }
           let(:another_income) { 0 }
           let(:another_income_of_income) { 0 }
           let(:another_income_of_income_of_income) { 0 }
+          let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value }
+          let(:another_income_in_percent) { another_income.to_f / another_value }
+          let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+          let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
           it "returns money object with correct value" do
             new_money = subtract
@@ -135,10 +165,16 @@ RSpec.describe Money do
         end
 
         context "#2" do
+          let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
           let(:another_initial_value) { 800 }
           let(:another_income) { 100 }
           let(:another_income_of_income) { 0 }
           let(:another_income_of_income_of_income) { 0 }
+          let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value }
+          let(:another_income_in_percent) { another_income.to_f / another_value }
+          let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+          let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
           it "returns money object with correct value" do
             new_money = subtract
@@ -155,10 +191,16 @@ RSpec.describe Money do
         end
 
         context "#3" do
+          let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
           let(:another_initial_value) { 700 }
           let(:another_income) { 100 }
           let(:another_income_of_income) { 100 }
           let(:another_income_of_income_of_income) { 0 }
+          let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value }
+          let(:another_income_in_percent) { another_income.to_f / another_value }
+          let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+          let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
           it "returns money object with correct value" do
             new_money = subtract
@@ -167,19 +209,25 @@ RSpec.describe Money do
 
           it "takes missed money from the incomes" do
             new_money = subtract
-            expect(new_money.initial_value).to eq(210)
+            expect(new_money.initial_value).to eq(211)
             expect(new_money.income).to eq(0)
             expect(new_money.income_of_income).to eq(0)
-            expect(new_money.income_of_income_of_income).to eq(1)
+            expect(new_money.income_of_income_of_income).to eq(0)
           end
         end
   
         context "#4" do
           let(:income_of_income_of_income) { 2 }
+          let(:another_value) { another_initial_value + another_income + another_income_of_income + another_income_of_income_of_income }
           let(:another_initial_value) { 1001 }
           let(:another_income) { 100 }
           let(:another_income_of_income) { 10 }
           let(:another_income_of_income_of_income) { 0 }
+          let(:another_initial_value_in_percent) { another_initial_value.to_f / another_value }
+          let(:another_income_in_percent) { another_income.to_f / another_value }
+          let(:another_income_of_income_in_percent) { another_income_of_income.to_f / another_value }
+          let(:another_income_of_income_of_income_in_percent) { another_income_of_income_of_income.to_f / another_value }
+
 
           it "returns money object with correct value" do
             new_money = subtract
@@ -219,7 +267,7 @@ RSpec.describe Money do
   end
 
   describe "#split" do
-    subject(:split) { money.split(value) }
+    subject(:split) { money.split(splited_value) }
 
     let(:initial_value) { 10000 }
     let(:income) { 1000 }
@@ -227,7 +275,7 @@ RSpec.describe Money do
     let(:income_of_income_of_income) { 10 }
 
 
-    let(:value) { 1000 }
+    let(:splited_value) { 1000 }
 
     it { is_expected.to be_a(Array) }
 

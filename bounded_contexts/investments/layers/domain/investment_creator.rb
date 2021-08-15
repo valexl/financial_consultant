@@ -33,10 +33,10 @@ class InvestmentCreator
 
     money_creator.build(
       currency: invested_money_attribute["currency"],
-      initial_value: invested_money_attribute["initial_value"],
-      income: invested_money_attribute["income"],
-      income_of_income: invested_money_attribute["income_of_income"],
-      income_of_income_of_income: invested_money_attribute["income_of_income_of_income"],
+      value: invested_money_attribute["value"],
+      income_in_percent: invested_money_attribute["income_in_percent"],
+      income_of_income_in_percent: invested_money_attribute["income_of_income_in_percent"],
+      income_of_income_of_income_in_percent: invested_money_attribute["income_of_income_of_income_in_percent"],
     )
   end
 

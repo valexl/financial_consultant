@@ -6,9 +6,9 @@ RSpec.describe Investments::ApartmentInvestment do
   let(:money_creator) { MoneyCreator.new }
   let(:cash) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(initial_value: rub_value),
-      usd_money: money_creator.build_usd(initial_value: usd_value),
-      eur_money: money_creator.build_eur(initial_value: eur_value)
+      rub_money: money_creator.build_rub(value: rub_value),
+      usd_money: money_creator.build_usd(value: usd_value),
+      eur_money: money_creator.build_eur(value: eur_value)
     )
   end
 

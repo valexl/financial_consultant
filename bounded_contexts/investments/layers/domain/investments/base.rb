@@ -8,7 +8,7 @@ module Investments
       @name = name
       @price = price
       @balance = balance
-      @invested_money = invested_money || Money.new(currency: price_currency)
+      @invested_money = invested_money || Money.new(currency: price_currency, value: 0, initial_value_in_percent: 0, income_in_percent: 0, income_of_income_in_percent: 0, income_of_income_of_income_in_percent: 0)
       @status = status || "pending"
     end
 

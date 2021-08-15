@@ -5,15 +5,15 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
   let(:money_creator) { MoneyCreator.new }
   let(:balance) do
     cash = Cash.new(
-      rub_money: money_creator.build_rub(initial_value: initial_balance_rub_value),
-      usd_money: money_creator.build_usd(initial_value: initial_balance_usd_value),
-      eur_money: money_creator.build_eur(initial_value: initial_balance_eur_value)
+      rub_money: money_creator.build_rub(value: balance_rub_value),
+      usd_money: money_creator.build_usd(value: balance_usd_value),
+      eur_money: money_creator.build_eur(value: balance_eur_value)
     )
     Balance.new(cash: cash, investments: [])
   end
-  let(:initial_balance_rub_value) { 0 }
-  let(:initial_balance_usd_value) { 0 }
-  let(:initial_balance_eur_value) { 0 }
+  let(:balance_rub_value) { 0 }
+  let(:balance_usd_value) { 0 }
+  let(:balance_eur_value) { 0 }
 
   before do
     Repositories::BalanceRepository.create(balance)
@@ -95,9 +95,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
       Proc.new {  post '/investments/open', params.merge(headers: headers) }
     end
 
-    let(:initial_balance_rub_value) { 100000 }
-    let(:initial_balance_usd_value) { 3000 }
-    let(:initial_balance_eur_value) { 700 }
+    let(:balance_rub_value) { 100000 }
+    let(:balance_usd_value) { 3000 }
+    let(:balance_eur_value) { 700 }
     let(:params) do
       {
         investment: {
@@ -195,9 +195,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
   end
 
   describe 'POST /investments/close.json' do
-    let(:initial_balance_rub_value) { 100000 }
-    let(:initial_balance_usd_value) { 3000 }
-    let(:initial_balance_eur_value) { 700 }
+    let(:balance_rub_value) { 100000 }
+    let(:balance_usd_value) { 3000 }
+    let(:balance_eur_value) { 700 }
     let(:post_open_investment) do
       Proc.new {  post '/investments/close', params.merge(headers: headers) }
     end
@@ -299,9 +299,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         }
       }
     end
-    let(:initial_balance_rub_value) { 0 }
-    let(:initial_balance_usd_value) { 100000 }
-    let(:initial_balance_eur_value) { 0 }
+    let(:balance_rub_value) { 0 }
+    let(:balance_usd_value) { 100000 }
+    let(:balance_eur_value) { 0 }
     let(:investment_name) { "test_investment" }
     let(:dividend_currency) { "USD"}
     let(:dividend_value) { 1000 }
@@ -324,7 +324,7 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
             },
             "invested_money" => {
               "currency" => "USD",
-              "initial_value" => initial_balance_usd_value - dividend_value,
+              "initial_value" => balance_usd_value - dividend_value,
               "income" => 0,
               "income_of_income" => 0,
               "income_of_income_of_income" => 0,
@@ -378,9 +378,9 @@ RSpec.describe FinancialConsultant::Investments::API, roda: :app do
         }
       }
     end
-    let(:initial_balance_rub_value) { 0 }
-    let(:initial_balance_usd_value) { 110000 }
-    let(:initial_balance_eur_value) { 0 }
+    let(:balance_rub_value) { 0 }
+    let(:balance_usd_value) { 110000 }
+    let(:balance_eur_value) { 0 }
     let(:investment_name) { "test_investment" }
     let(:expense_currency) { "USD"}
     let(:expense_value) { 1000 }
