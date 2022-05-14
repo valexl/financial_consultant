@@ -1,0 +1,9 @@
+# Admin subdomain
+
+This subdomain contains information about 
+
+## UML
+
+[Sequence diagram](https://sequencediagram.org/index.html#initialData=A4QwTgLglgxloDsIAICCATAtlBBlArgEboD2mIOqwwAUDRtnkaeZdQLQB8AVAMIgQApgHMSYAJ68wggYPQBRAG6CkALkL4oAG3T0sOAsTIUEVYAB527fkNESpMoQuVrBLiHQYHmxtsC5eCAAivghKKhAAzgAKRFpQkQAWgmCqwHEJiQAUbhEAlHqMIaxh7jEZSSlc3ACSSCJgAlAkCACygpGRIMKC6po6Oe4FdbaN0C3tnd2CVpyBxSbhSOWE8ZWpmB1dPYU4CzhLUbGrmVWck9uCAEL4kWm32ZtTPQUX0zeRXLjAKug4wpFDCwTGZ7lotFknpcCt9fv9AT4SmZqoEbCIxJJpLJnBE+tpdKjZHZMY45IdZrCEH8EACgaFQbkkDRKdTaYiQRxOCz4ftShEVmtkql0ickoN8nRJXQgA) to show how to publish domain event from admin subdomain to spendings
+
+![](https://raw.githubusercontent.com/valexl/financial_consultant/master/docs/admin/Move%20domain%20event%20from%20admin%20subdomain%20to%20spendings%20subdomain.png)
