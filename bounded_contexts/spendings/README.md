@@ -27,3 +27,53 @@ Actions:
 
 
 Month has many days. There may be several expenses from different categories and in different currencies. Each of such expenses you'll track. You can't have a negative sum in tracking expenses. Some of purchases might be canceled that will trigger cancelgin/removing expenses. You can see the stats for a month to see how much money there were spent.
+
+
+## Domain
+
+### Entities
+
+- Month
+  id - should it be external??
+
+- Category
+  id - should it be external??
+
+- Expense
+  id - local (should it be a entity?)
+  change_sum action
+  change_category action
+  change_comment action
+  change_currency action
+
+### Value Objects
+
+- Day
+- Money
+- Currency
+- Comment
+
+### Services
+
+- TrackExpenseService
+- ConvertMoneyToCurrencyInDateService(money, old_currency, new_currency, date)
+- ShowExpenseForMonthInCurrencyService (???)
+
+### Events
+
+- MonthHasBeenStartedEvent
+- CategoryAddedEvent
+- ExpenseTrackedEvent
+- ExpenseCanceledEvent
+- TrackedExpenseSumModifiedEvent
+- TrackedExpenseCategoryChangedEvent
+
+
+
+
+
+
+
+
+
+
