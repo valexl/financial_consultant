@@ -57,7 +57,7 @@ Month has many days. There may be several expenses from different categories and
 
 - TrackExpenseService
 - ConvertMoneyToCurrencyInDateService(money, old_currency, new_currency, date)
-- ShowExpenseForMonthInCurrencyService (???)
+- ExpenseForMonthInCurrencyService(month, expense_list) (???)
 
 ### Events
 
