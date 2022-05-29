@@ -6,7 +6,7 @@ RSpec.describe Common::Domain::Model::CreatedAt do
   let(:time_value) { Time.now }
 
   describe '#to_s' do
-    subject(:to_s) { created_at.to_s }
+    subject(:to_string) { created_at.to_s }
 
     it { is_expected.to eq("#{time_value.to_r}") }
   end

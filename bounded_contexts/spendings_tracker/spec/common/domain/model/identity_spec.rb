@@ -8,7 +8,7 @@ RSpec.describe Common::Domain::Model::Identity do
   let(:created_at_value) { Common::Domain::Model::CreatedAt.new }
 
   describe '#to_s' do
-    subject(:to_s) { identity.to_s }
+    subject(:to_string) { identity.to_s }
 
     it { is_expected.to eq("#{subdomain}-#{uniq_value}-#{created_at_value}") }
   end
