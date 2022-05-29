@@ -3,6 +3,7 @@ require 'byebug'
 
 require_relative '../app'
 require_relative 'support/rspec_matchers'
+require_relative 'support/port/adapter/persistence/memory_month_repository'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

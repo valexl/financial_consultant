@@ -5,7 +5,7 @@ module Common
         attribute :time, Types::Time.optional.default { Time.now }
 
         def to_s
-          time.to_f.to_s
+          time.to_r.to_s
         end
       end
     end

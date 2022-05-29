@@ -1,0 +1,1 @@
+require_relative 'adapter/persistence/pg_month_repository'
