@@ -5,22 +5,21 @@ RSpec.describe Common::Domain::Model::CreatedAt do
 
   let(:time_value) { Time.now }
 
-
-  describe "#to_s" do
+  describe '#to_s' do
     subject(:to_s) { created_at.to_s }
 
-    it { is_expected.to eq("#{time_value.to_r}")}
+    it { is_expected.to eq("#{time_value.to_r}") }
   end
 
-  describe "#time" do
+  describe '#time' do
     subject(:time) { created_at.time }
 
     it { is_expected.to eq(time_value) }
 
-    context "when there is no given created_at" do
+    context 'when there is no given created_at' do
       let(:created_at) { described_class.new }
 
-      it { expect(time.to_i).to eq(Time.now.to_i ) }
+      it { expect(time.to_i).to eq(Time.now.to_i) }
     end
   end
 end
