@@ -10,6 +10,7 @@ gem 'sequel'
 
 # config
 gem 'dotenv'
+gem 'rake'
 
 # CI
 gem 'rubocop', require: false

@@ -1,0 +1,52 @@
+require 'sequel'
+require 'dotenv'
+require 'logger'
+require 'byebug'
+
+Sequel.extension :migration
+
+
+create_db = lambda do |env|
+  ENV['RACK_ENV'] = env
+
+  Dotenv.load(".env.#{ENV['RACK_ENV']}")
+  db_name = ENV.fetch('DATABASE_URL').split('/').last
+  Sequel.connect('adapter' => 'postgres', 'database' => 'postgres') do |db|
+    db.execute "DROP DATABASE IF EXISTS #{db_name}"
+    db.execute "CREATE DATABASE #{db_name}"
+  end
+end
+
+run_migrations = lambda do |env|
+  ENV['RACK_ENV'] = env
+
+  Dotenv.load(".env.#{ENV['RACK_ENV']}")
+  db_name = ENV.fetch('DATABASE_URL').split('/').last
+  DB = Sequel.connect('adapter' => 'postgres', 'database' => db_name)
+  Sequel::Migrator.run(DB, 'port/adapter/persistence/migrations/', :use_transactions=>true)
+end
+
+desc 'Create development database and drop it before if it exists'
+task :create_dev_db do
+  create_db.call('development')
+end
+
+desc 'Create test database and drop it before if it exists'
+task :create_test_db do
+  create_db.call('test')
+end
+
+desc 'Create production database and drop it before if it exists'
+task :create_production_db do
+  create_db.call('production')
+end
+
+desc 'Run development migrations'
+task :db_migrate_dev do
+  run_migrations.call('development')
+end
+
+desc 'Run test migrations'
+task :db_migrate_test do
+  run_migrations.call('test')
+end
