@@ -1,21 +1,19 @@
-module Test
-  module Port
-    module Adapter
-      module Persistence
-        class MemoryMonthRepository
-          include Domain::Model::Month::MonthRepositoryInterface
+module Port
+  module Adapter
+    module Persistence
+      class MemoryMonthRepository
+        include Domain::Model::Month::MonthRepositoryInterface
 
-          def initialize
-            @records = []
-          end
+        def initialize
+          @records = []
+        end
 
-          def all_months
-            @records
-          end
+        def all_months
+          @records
+        end
 
-          def create(month)
-            @records << month
-          end
+        def create(month)
+          @records << month
         end
       end
     end

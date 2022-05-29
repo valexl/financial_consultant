@@ -20,6 +20,10 @@ RSpec.describe Port::Adapter::Persistence::PGMonthRepository do
       end
     end
     let(:identity) do
+      created_at = Common::Domain::Model::CreatedAt.new(
+        time: Time.at(Time.now .to_r)
+      )
+
       Proc.new do |uniq_value|
         identity = Common::Domain::Model::Identity.new(
           subdomain: "admin",
@@ -28,12 +32,6 @@ RSpec.describe Port::Adapter::Persistence::PGMonthRepository do
         )
       end
     end
-    let(:created_at) do
-      Common::Domain::Model::CreatedAt.new(
-        time: Time.at(time.to_r)
-      )
-    end
-    let(:time) { Time.now }
 
 
     context "when there is no records" do

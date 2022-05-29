@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Application::Month::MonthApplicationService do
   subject(:service) { described_class.new(repository: repository) }
 
-  let(:repository) { Test::Port::Adapter::Persistence::MemoryMonthRepository.new } # TODO: add repository once have one
+  let(:repository) { Port::Adapter::Persistence::MemoryMonthRepository.new } # TODO: add repository once have one
 
   describe '#start_month' do
     subject(:start_month) { service.start_month(command) }
