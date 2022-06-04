@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Domain::Model::Month::Month do
+RSpec.describe SpendingsTracker::Domain::Model::Month::Month do
   subject(:month) { described_class.new id: identity, year: year_value, month_number: month_number_value }
 
   let(:identity) { Common::Domain::Model::Identity.new subdomain: 'admin', uniq_value: '1234' }

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Port::Adapter::Persistence::PGMonthRepository do
+RSpec.describe SpendingsTracker::Port::Adapter::Persistence::PGMonthRepository do
   let(:repository) { described_class.new  }
 
   before do
@@ -12,7 +12,7 @@ RSpec.describe Port::Adapter::Persistence::PGMonthRepository do
 
     let(:expected_entity) do
       Proc.new do |uniq_value, year, month_number|
-        Domain::Model::Month::Month.new(
+        SpendingsTracker::Domain::Model::Month::Month.new(
           id: identity.call(uniq_value),
           year: year,
           month_number: month_number
@@ -88,7 +88,7 @@ RSpec.describe Port::Adapter::Persistence::PGMonthRepository do
     subject(:create) { repository.create(month) }
 
     let(:month) do
-      Domain::Model::Month::Month.new(
+      SpendingsTracker::Domain::Model::Month::Month.new(
         id: identity,
         year: year,
         month_number: month_number

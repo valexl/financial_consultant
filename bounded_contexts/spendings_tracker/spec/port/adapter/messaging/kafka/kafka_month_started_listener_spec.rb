@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-RSpec.describe Port::Adapter::Messaging::Kafka::KafkaMonthStartedListener do
+RSpec.describe SpendingsTracker::Port::Adapter::Messaging::Kafka::KafkaMonthStartedListener do
   subject(:listener) { described_class.new repository }
 
-  let(:repository) { Port::Adapter::Persistence::MemoryMonthRepository.new }
+  let(:repository) { SpendingsTracker::Port::Adapter::Persistence::MemoryMonthRepository.new }
 
   describe "#filtered_dispatch" do
     subject(:filtered_dispatch) { listener.filtered_dispatch(event_payload) }
@@ -35,7 +35,7 @@ RSpec.describe Port::Adapter::Messaging::Kafka::KafkaMonthStartedListener do
       end
 
       it "delegates logic to MonthApplicationService" do
-        expect_any_instance_of(Application::Month::MonthApplicationService).to receive(:start_month)
+        expect_any_instance_of(SpendingsTracker::Application::Month::MonthApplicationService).to receive(:start_month)
         filtered_dispatch
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe Port::Adapter::Messaging::Kafka::KafkaMonthStartedListener do
       end
 
       it "doesn't delegate logic to MonthApplicationService" do
-        expect_any_instance_of(Application::Month::MonthApplicationService).not_to receive(:start_month)
+        expect_any_instance_of(SpendingsTracker::Application::Month::MonthApplicationService).not_to receive(:start_month)
         filtered_dispatch
       end
     end
