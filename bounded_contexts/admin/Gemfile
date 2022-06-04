@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '3.0'
+
+# database
+gem 'pg'
+gem 'sequel'
+
+# config
+gem 'dotenv'
+gem 'rake'
+
+# CI
+gem 'rubocop', require: false
+
+# data structure
+gem 'dry-types'
+gem 'dry-struct'
+
+group :test, :development do
+  # debug
+  gem 'byebug'
+end
+
+group :test do
+  gem 'rspec'
+end
