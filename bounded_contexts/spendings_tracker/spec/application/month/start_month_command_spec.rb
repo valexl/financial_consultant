@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Application::Month::StartMonthCommand do
+RSpec.describe SpendingsTracker::Application::Month::StartMonthCommand do
   subject(:command) do
     described_class.new(
       id: id,
