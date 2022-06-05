@@ -1,5 +1,6 @@
 require 'dry-types'
 require 'dry-struct'
+require 'securerandom'
 
 require_relative './types'
 require_relative './domain/model/created_at'

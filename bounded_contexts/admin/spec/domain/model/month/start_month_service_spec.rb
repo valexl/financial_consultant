@@ -10,5 +10,10 @@ RSpec.describe Admin::Domain::Model::Month::StartMonthService do
     let(:month_number) { 6 }
 
     it { is_expected.to be_a(Admin::Domain::Model::Month::Month) }
+
+    it "publishes MonthStarted" do
+      expect(Admin::Domain::Model::DomainEventPublisher).to receive(:publish).with(an_instance_of(Admin::Domain::Model::Month::MonthStarted))
+      call
+    end
   end
 end
