@@ -17,6 +17,14 @@ RSpec.describe Admin::Application::Month::MonthApplicationService do
       }.to change { repository.all_months.count }.by(1)
     end
 
+    context "if month is already crated" do
+      it "must not create a new record" do
+        expect {
+          start_month
+        }.to avoid_changing { repository.all_months.count }
+      end
+    end
+
     it "publish events through producer" do
       raise 'Implement me'
     end
