@@ -5,7 +5,7 @@ RSpec.describe Admin::Domain::Model::DomainEventPublisher do
   describe ".publish" do
     subject(:publish) { described_class.publish(event) }
 
-    before { described_class.clear }
+    before { described_class.reset }
 
     class SomethingHappened < Common::Domain::Model::DomainEvent; end
     class SomethingWeirdHappened < Common::Domain::Model::DomainEvent; end

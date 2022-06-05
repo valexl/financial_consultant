@@ -7,8 +7,15 @@ module Admin
           @consumer = consumer
         end
 
-        def call
+        def start_month(command)
+          Admin::Domain::Model::DomainEventPublisher.reset # double check it!!
+
+          # it should do nothing if month was already started
+          month = Admin::Domain::Model::DomainRegistry
+            .start_month_service
+            .call(year: command.year, month_number: command.month_number)
           
+          @repository.create(month)
         end
       end
     end

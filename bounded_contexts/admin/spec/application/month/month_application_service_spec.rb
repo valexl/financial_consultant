@@ -6,9 +6,19 @@ RSpec.describe Admin::Application::Month::MonthApplicationService do
   let(:repository) { Admin::Port::Adapter::Persistence::MemoryMonthRepository.new }
   let(:producer) { Admin::Port::Adapter::Messaging::Kafka::FakeAdminTopicProducer.new }
 
-  describe "#call" do
-    subject(:call) { service.call }
+  describe "#start_month" do
+    subject(:start_month) { service.start_month(command) }
 
-    it { is_expected.not_to raise_error }
+    let(:command) { Admin::Application::Month::StartMonthCommand.new(year: 2022, month_number: 6) }
+
+    it "creates a new month" do
+      expect {
+        start_month
+      }.to change { repository.all_months.count }.by(1)
+    end
+
+    it "publish events through producer" do
+      raise 'Implement me'
+    end
   end
 end
