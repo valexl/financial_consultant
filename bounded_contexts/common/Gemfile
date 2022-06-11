@@ -11,6 +11,9 @@ gem 'rubocop', require: false
 gem 'dry-types'
 gem 'dry-struct'
 
+# messaging
+gem 'karafka'
+
 group :test, :development do
   # debug
   gem 'byebug'

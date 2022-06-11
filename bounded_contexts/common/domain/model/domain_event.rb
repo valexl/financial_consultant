@@ -8,6 +8,10 @@ module Common
         attribute :subdomain, Types::String
         attribute :occurred_on, CreatedAt.default { CreatedAt.new }
         attribute :version, Types::String.default { VERSION }
+
+        def to_h
+          super.merge(event_name: self.class.name.underscore)
+        end
       end
     end
   end
