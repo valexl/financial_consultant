@@ -4,7 +4,7 @@ module Common
       module Messaging
         module Kafka
           class AbstractProducer
-            def self.call(event)
+            def self.broadcast_events(events)
             end
           end
         end
