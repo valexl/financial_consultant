@@ -10,4 +10,5 @@ require_relative './domain/model/domain_event'
 
 require_relative './event/event_sourcing'
 
+require 'karafka'
 require_relative './port/adapter/messaging/kafka/abstract_producer'
