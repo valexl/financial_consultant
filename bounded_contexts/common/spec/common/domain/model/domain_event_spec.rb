@@ -26,4 +26,24 @@ RSpec.describe Common::Domain::Model::DomainEvent do
 
     it { is_expected.to be_a(Common::Domain::Model::CreatedAt) }
   end
+
+  describe "#to_h" do
+    subject(:to_h) { event.to_h }
+
+    let(:expected_data) do
+      {
+        id: event.id,
+        event_name: event.class.name.underscore,
+        occurred_on: {
+          time: event.occurred_on.time
+        },
+        subdomain: event.subdomain,
+        version: event.version
+      }
+    end
+
+    it "returns default value + adds info about event" do
+      expect(to_h).to eq(expected_data)
+    end
+  end
 end
