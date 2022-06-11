@@ -40,7 +40,7 @@ RSpec.describe Admin::Application::ApplicationServiceLifeCycle do
       end
 
       it "broadcasts events through producer" do
-        expect(producer).to receive(:call).with(event)
+        expect(producer).to receive(:broadcast_events).with([event])
         success
       end
     end
@@ -49,14 +49,14 @@ RSpec.describe Admin::Application::ApplicationServiceLifeCycle do
       before { event_store.rollback }
 
       it "doesn't broadcast anything" do
-        expect(producer).not_to receive(:call)
+        expect(producer).not_to receive(:broadcast_events)
         success
       end
     end
   end
 
-  describe "#failure" do
-    subject(:failure) { service.failure }
+  describe "#rollback" do
+    subject(:rollback) { service.rollback }
 
     context "when there were some events" do
       before do
@@ -64,25 +64,25 @@ RSpec.describe Admin::Application::ApplicationServiceLifeCycle do
       end
 
       it "doesn't broadcast anything" do
-        expect(producer).not_to receive(:call)
-        failure
+        expect(producer).not_to receive(:broadcast_events)
+        rollback
       end
 
       it "cleans event store" do
         expect(event_store).to receive(:rollback)
-        failure
+        rollback
       end      
     end
 
     context "when there were no events" do
       it "doesn't broadcast anything" do
-        expect(producer).not_to receive(:call)
-        failure
+        expect(producer).not_to receive(:broadcast_events)
+        rollback
       end
 
       it "cleans event store" do
         expect(event_store).to receive(:rollback)
-        failure
+        rollback
       end      
     end
   end
