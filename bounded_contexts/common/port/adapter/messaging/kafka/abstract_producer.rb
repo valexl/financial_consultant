@@ -1,9 +1,11 @@
-module Admin
+module Common
   module Port
     module Adapter
       module Messaging
         module Kafka
-          class FakeAdminTopicProducer < Common::Port::Adapter::Messaging::Kafka::AbstractProducer
+          class AbstractProducer
+            def self.call(event)
+            end
           end
         end
       end
