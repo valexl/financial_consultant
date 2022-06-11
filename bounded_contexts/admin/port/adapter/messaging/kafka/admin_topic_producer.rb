@@ -7,7 +7,7 @@ module Admin
             topic :admin
 
             def respond(event)
-              respond_to :admin, event
+              respond_to :admin, event.to_h
             end
           end
         end
