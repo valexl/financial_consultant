@@ -2,7 +2,6 @@ module Admin
   module Domain
     module Model
       class DomainEventPublisher
-
         def self.reset
           @subscribers = []
         end

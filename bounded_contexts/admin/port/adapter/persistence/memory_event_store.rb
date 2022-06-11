@@ -16,6 +16,10 @@ module Admin
           def new_events
             @storage
           end
+
+          def rollback
+            @storage = []
+          end
         end
       end
     end

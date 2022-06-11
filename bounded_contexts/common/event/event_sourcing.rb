@@ -5,6 +5,10 @@ module Common
         raise 'Implement me'
       end
 
+      def rollback
+        raise 'Implement me'
+      end
+
       def new_events
         raise 'Implement me'
       end

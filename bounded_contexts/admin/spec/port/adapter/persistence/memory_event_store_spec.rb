@@ -32,4 +32,26 @@ RSpec.describe Admin::Port::Adapter::Persistence::MemoryEventStore do
       end
     end
   end
+
+  describe "#rollback" do
+    subject(:rollback) { event_store.rollback }
+
+    context "when there is no added events" do
+      it "doesn't change anything" do
+        expect {
+          rollback
+        }.to avoid_changing { event_store.instance_variable_get(:@storage) }.from([])
+      end
+    end
+
+    context "when there was added event" do
+      before { event_store.store_event(event) }
+      
+      it "removes saved before events" do
+        expect {
+          rollback
+        }.to change { event_store.instance_variable_get(:@storage) }.to([])
+      end
+    end
+  end  
 end
