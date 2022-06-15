@@ -1,6 +1,6 @@
 # Personal Financial Consultant
 
-Financial consultant that helps me to handle family budget + manage cash flow and investments
+Financial consultant that helps me to handle family budget + manage cash flow and investments 
 
 ## Diagramms
 
