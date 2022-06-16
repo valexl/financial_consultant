@@ -12,6 +12,9 @@ gem 'sequel'
 gem 'dotenv'
 gem 'rake'
 
+# messaging
+gem 'karafka'
+
 # CI
 gem 'rubocop', require: false
 

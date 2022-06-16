@@ -9,6 +9,7 @@ module SpendingsTracker
             def initialize(repository)
               @repository = repository
             end
+
             # TODO: setup to listen kafka
             def filtered_dispatch(event_payload)
               return if event_payload["event"] != LISTENING_EVENT
